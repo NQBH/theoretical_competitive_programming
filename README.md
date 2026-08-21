@@ -1,0 +1,2 @@
+# theoretical_competitive_programming
+Mathematical Theories for Competitive Programming
