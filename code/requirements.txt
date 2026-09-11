@@ -1,0 +1,5 @@
+# Software environment specifications for Theoretical Competitive Programming (TCP)
+# Python test harnesses, differential fuzzers, and combinatorial oracles
+networkx>=3.0
+numpy>=1.20.0
+sympy>=1.10.0
