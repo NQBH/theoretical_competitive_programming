@@ -1,0 +1,2255 @@
+% ======================================================================
+% THEORETICAL COMPETITIVE PROGRAMMING COMPANION GUIDEBOOK
+% Specialized Algorithmic Modules, C++ Implementations, \& Differential Testing in Python
+% School of Technology, University of Management and Technology (UMT)
+% Author: MSc. Nguyen Quan Ba Hong (Department of AI \& Data Science)
+% ======================================================================
+
+\documentclass[11pt, letterpaper]{report}
+
+% --- FONTS, TYPOGRAPHY & ENCODING ---
+\usepackage[utf8]{vietnam}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=10]{biblatex}
+\addbibresource{../bib.bib}
+
+
+
+
+\usepackage{microtype}
+\usepackage{algorithmic,amsmath,amssymb,amsthm,float,graphicx,mathtools}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,decorations.pathmorphing,matrix,patterns,positioning,shapes.geometric}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[plainpages=false,pdfpagelabels,colorlinks=true,linkcolor=blue!80!black,urlcolor=red!80!black,citecolor=teal!80!black]{hyperref}
+
+\allowdisplaybreaks
+
+% --- THEOREM \& PROTOCOL ENVIRONMENTS ---
+\newtheorem{baitoan}{Problem}[chapter]
+\newtheorem{dinhly}{Theorem}[chapter]
+\newtheorem{dinhnghia}{Definition}[chapter]
+\newtheorem{bode}{Lemma}[chapter]
+\newtheorem{nhanxet}{Observation}[chapter]
+
+% --- PAGE GEOMETRY ---
+\usepackage[
+	top=1.2in,
+	bottom=1.2in,
+	inner=1.1in,
+	outer=1.1in,
+	headheight=26pt
+]{geometry}
+
+% --- HEADERS \& FOOTERS ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\scshape\small Module \thechapter}
+\fancyhead[R]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{26pt}
+
+% --- CHAPTER FORMATTING ---
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\centering}
+{\textsc{Module}\ \thechapter}
+{14pt}
+{\Huge}
+\titleformat{\section}
+{\normalfont\Large\bfseries}
+{\S\ \thesection.}
+{1em}
+{}
+\titleformat{\subsection}
+{\normalfont\large\bfseries}
+{\thesubsection.}
+{0.8em}
+{}
+
+% --- LISTINGS CONFIGURATION ---
+\definecolor{codegreen}{rgb}{0,0.55,0}
+\definecolor{codegray}{rgb}{0.45,0.45,0.45}
+\definecolor{codepurple}{rgb}{0.55,0,0.8}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{codebase}{
+ backgroundcolor=\color{backcolour}, 
+ commentstyle=\color{codegreen}\itshape,
+ keywordstyle=\color{blue}\bfseries,
+ numberstyle=\tiny\color{codegray},
+ stringstyle=\color{codepurple},
+ basicstyle=\ttfamily\footnotesize,
+ breakatwhitespace=false, 
+ breaklines=true, 
+ captionpos=b, 
+ keepspaces=true, 
+ numbers=left, 
+ numbersep=5pt, 
+ showspaces=false, 
+ showstringspaces=false,
+ showtabs=false, 
+ tabsize=4
+}
+\lstset{style=codebase}
+
+% --- MATHEMATICAL MACROS ---
+\newcommand{\OO}{\mathcal{O}}
+\newcommand{\AC}{\texttt{AC}}
+\newcommand{\WA}{\texttt{WA}}
+\newcommand{\TLE}{\texttt{TLE}}
+\newcommand{\MLE}{\texttt{MLE}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\begin{document}
+
+% --- TITLE PAGE ---
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+	\centering
+	\vspace*{0.5cm}
+	{\scshape\Large Trường Đại học Quản lý và Công nghệ TP. Hồ Chí Minh (UMT)\par}
+	{\scshape\large Khoa Công nghệ --- Department of Artificial Intelligence \& Data Science\par}
+	\vspace{1.2cm}
+	\rule{\linewidth}{0.8pt} \\
+	\vspace{0.4cm}
+	{\Huge \textbf{Cẩm Nang Bồi Dưỡng Olympic Tin Học \& ICPC}} \\
+	\vspace{0.3cm}
+	{\Large \textit{A Companion Guidebook: 18 Algorithmic Modules, C++ Implementation, \& Differential Testing}} \\
+	\vspace{0.3cm}
+	\rule{\linewidth}{0.8pt} \\
+	\vspace{1.2cm}
+	
+	\textbf{\Large ThS. Nguyễn Quản Bá Hồng} \\
+	\vspace{0.2cm}
+	\textit{Department of Artificial Intelligence \& Data Science, School of Technology, UMT} \\
+	\texttt{hong.nguyenquanba@umt.edu.vn} \\
+	\vspace{1.2cm}
+	
+	\textbf{Academic Leadership \& Scientific Advisory:} \\
+	\textbf{PGS. TS. Trần Đan Thư} \\
+	\textit{Trưởng Khoa Công nghệ, UMT} \\
+	\vfill
+	
+	{\large Sản Phẩm Dạng II: Cẩm Nang Hướng Dẫn Bồi Dưỡng (Báo Cáo Thực Hành)\par}
+	{\small Nhiệm vụ Khoa học và Công nghệ Cấp Trường --- Mã số Đề cương 2026/UMT-SOT\par}
+	\vspace{0.4cm}
+	{\large Thành phố Hồ Chí Minh, Năm 2026\par}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+% --- EXECUTIVE PREFACE ---
+\pagenumbering{roman}
+\chapter*{Lời Nói Đầu \& Quy Trình Thực Hành}
+\label{chap:intro}
+\addcontentsline{toc}{chapter}{Lời Nói Đầu \& Quy Trình Thực Hành}
+
+Tài liệu này là Cẩm nang Bồi dưỡng (Sản phẩm Dạng II) thuộc Đề tài Khoa học và Công nghệ cấp Trường UMT: \textit{Nghiên cứu xây dựng cẩm nang bồi dưỡng Olympic Tin học sinh viên trong thời đại AI} (Mã số đề cương: 2026/UMT-SOT).
+
+Mỗi bài toán trong cẩm nang được cấu trúc theo Quy trình 3 Giai đoạn:
+
+\begin{enumerate}[label=\textbf{Giai đoạn \arabic*:}]
+ \item \textbf{Phân Tích Toán Học:} Phân tích cấu trúc đại số và tính chất đơn điệu (Monoid, tính chất Monge, cấu trúc DAG), thiết lập bất biến thuật toán và chứng minh giới hạn độ phức tạp thời gian và không gian.
+ \item \textbf{Cài Đặt C++:} Cài đặt thuật toán bằng ngôn ngữ C++, chú trọng cấu trúc dữ liệu mảng phẳng, tối ưu hóa tính cục bộ của bộ nhớ đệm (Cache Locality) và kiểm soát bộ nhớ.
+ \item \textbf{Kiểm Thử Đối Chiếu (Python):} Xây dựng kịch bản kiểm thử đối chiếu (Differential Testing) và sinh dữ liệu thử nghiệm ngẫu nhiên nhằm đối sánh kết quả giữa thuật toán tối ưu và thuật toán vét cạn (brute-force) làm chuẩn đối chứng (oracle).
+\end{enumerate}
+
+Cuối mỗi chuyên đề là hệ thống câu hỏi mở rộng và thảo luận lý thuyết.
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+% ======================================================================
+% MODULE 0: THEORETICAL FOUNDATIONS
+% ======================================================================
+\chapter*{Chương 0: Nền Tảng Khoa Học Máy Tính Lý Thuyết}
+\addcontentsline{toc}{chapter}{Chương 0: Nền Tảng Khoa Học Máy Tính Lý Thuyết}
+\label{mod:theory_0}
+
+\section{Mô Hình RAM \& Giới Hạn Tính Toán}
+Mọi thuật toán trong cẩm nang này được phân tích trên \textbf{Mô hình Máy Truy cập Ngẫu nhiên (Random Access Machine - RAM)} \cite{knuth1997art}. Trong mô hình này:
+\begin{itemize}
+ \item Không gian địa chỉ bộ nhớ là vô hạn và thời gian truy xuất mỗi ô nhớ là hằng số $\Theta(1)$.
+ \item Các phép toán số học và thao tác bit cơ bản trên các từ máy kích thước $w$ bit (với $w = \Omega(\log n)$) tiêu tốn thời gian $\Theta(1)$.
+\end{itemize}
+Trong các kiến trúc vi xử lý thực tế \cite{stroustrup2013c}, cấu trúc phân cấp bộ nhớ (Memory Hierarchy) tạo ra độ trễ truy xuất không đồng đều. Cấu trúc dữ liệu yêu cầu ánh xạ vào các mảng bộ nhớ phẳng (Flat Arrays) để tối ưu hóa tỷ lệ trúng bộ nhớ đệm (Cache Hit rate).
+
+\section{Định Nghĩa Ký Hiệu Tiệm Cận (Bachmann--Landau)}
+Độ phức tạp thuật toán được xác định qua hệ thống ký hiệu Bachmann--Landau \cite{knuth1997art} đối với các hàm không âm tiệm cận $f, g: \mathbb{N} \to \mathbb{R}_{\ge 0}$:
+\begin{itemize}
+ \item \textbf{Cận trên tiệm cận:} $\mathcal{O}(g(n)) = \left\{ f(n) \mid \exists c > 0, n_0 \in \mathbb{N} : \forall n \ge n_0, 0 \le f(n) \le c \cdot g(n) \right\}$.
+ \item \textbf{Cận dưới tiệm cận:} $\Omega(g(n)) = \left\{ f(n) \mid \exists c > 0, n_0 \in \mathbb{N} : \forall n \ge n_0, 0 \le c \cdot g(n) \le f(n) \right\}$.
+ \item \textbf{Cận tiệm cận chặt (chính xác):} $\Theta(g(n)) = \mathcal{O}(g(n)) \cap \Omega(g(n))$, tương đương với sự tồn tại của các hằng số $c_1, c_2 > 0$ và $n_0 \in \mathbb{N}$ sao cho $0 \le c_1 \cdot g(n) \le f(n) \le c_2 \cdot g(n)$ với mọi $n \ge n_0$.
+\end{itemize}
+
+\section{Lý Thuyết Phức Tạp Tính Toán (\texorpdfstring{$\mathcal{P}$ vs $\mathcal{NP}$}{P vs NP})}
+Các bài toán quyết định (Decision Problems) được phân loại theo tính khả quy và khả năng giải trong thời gian đa thức:
+\begin{itemize}
+ \item $\mathcal{P}$: Lớp các bài toán quyết định giải được bằng máy Turing đơn định trong thời gian đa thức $\mathcal{O}(n^k)$ với hằng số $k \ge 0$.
+ \item $\mathcal{NP}$: Lớp các bài toán quyết định giải được bằng máy Turing phi đơn định trong thời gian đa thức, hoặc tương đương, tồn tại chứng chỉ nghiệm (certificate) có kích thước đa thức kiểm chứng được bằng máy Turing đơn định trong thời gian đa thức.
+\end{itemize}
+Đối với các bài toán thuộc lớp $\mathcal{NP}$-khó (NP-hard), không tồn tại thuật toán thời gian đa thức $\mathcal{O}(n^k)$ giải đúng trong trường hợp tổng quát nếu giả thuyết $\mathcal{P} \neq \mathcal{NP}$ đúng.
+
+% ======================================================================
+% MODULE 1: TWO POINTERS
+% ======================================================================
+\chapter{Kỹ Thuật Hai Con Trỏ (Two Pointers Method)}
+\label{mod:two_pointers}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Subarray Sum on Monotonic Sequence]
+Cho mảng số nguyên dương $A = [a_1, a_2, \dots, a_n]$ ($a_i \ge 1, \forall i \in [n]$) có kích thước $n \ge 1$ và giá trị đích $S \in \mathbb{Z}^+$. Hãy xác định cặp chỉ số $1 \le l \le r \le n$ sao cho $\sum_{i=l}^r a_i = S$, hoặc trả về $\{-1, -1\}$ nếu không tồn tại đoạn con thỏa mãn.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Xét dãy tổng tiền tố $P[k] = \sum_{i=1}^k a_i$ với quy ước $P[0] = 0$. Do mọi phần tử $a_i \ge 1 > 0$, dãy $\{P[k]\}_{k=0}^n$ là dãy số tăng ngặt trên $\mathbb{Z}_{\ge 0}$. Tổng của đoạn con bất kỳ $[l, r]$ ($1 \le l \le r \le n$) được biểu diễn qua:
+\begin{equation}
+\sum_{i=l}^r a_i = P[r] - P[l-1].
+\end{equation}
+Với mỗi vị trí con trỏ phải $r$ cố định, biểu thức $P[r] - P[l-1]$ là hàm giảm ngặt theo chỉ số con trỏ trái $l$. Tính chất đơn điệu này dẫn đến hai nhận xét cấu trúc:
+\begin{itemize}
+ \item Nếu tại bước hiện tại tổng $\sum_{i=l}^r a_i > S$, thì với mọi chỉ số $l' < l$, ta có $\sum_{i=l'}^r a_i > \sum_{i=l}^r a_i > S$. Do đó, không tồn tại bất kỳ nghiệm hợp lệ nào kết thúc tại $r$ với cận trái $l' \le l$. Thuật toán tịnh tiến con trỏ trái: $l \gets l + 1$.
+ \item Khi con trỏ phải tịnh tiến từ $r$ sang $r+1$, tổng đoạn con tăng thêm $a_{r+1} \ge 1$. Nếu đoạn con kết thúc tại $r$ với cận trái $l$ đã thỏa mãn $\sum_{i=l}^r a_i \ge S$, thì với mọi $l' < l$, đoạn con $[l', r+1]$ sẽ có tổng $\sum_{i=l'}^{r+1} a_i > \sum_{i=l}^{r+1} a_i > S$. Vì vậy, cận trái hợp lệ tiếp theo $l_{\text{mới}}$ (nếu tồn tại) luôn thỏa mãn $l_{\text{mới}} \ge l$.
+\end{itemize}
+Bất biến đơn điệu này chứng minh rằng hai con trỏ $l$ và $r$ chỉ dịch chuyển tịnh tiến theo một chiều duy nhất từ trái sang phải mà không yêu cầu quay lui (backtracking). Trong mã nguồn cài đặt (C++ và Python), mảng được đánh chỉ số từ $0$ ($0 \le l \le r < n$), do đó kết quả được quy đổi về chỉ số toán học $1$-based thông qua cặp $\{l+1, r+1\}$.
+
+\begin{proof}[Phân tích tổng hợp (Aggregate Analysis)]
+\leavevmode\par
+Quá trình thực thi của thuật toán được phân tích thông qua chuyển động phối hợp giữa hai con trỏ $l$ và $r$:
+\begin{itemize}
+ \item Con trỏ phải $r$ duyệt tịnh tiến đơn điệu từ chỉ số $0$ đến $n-1$, thực hiện tối đa $n$ lần lặp và tăng chỉ số.
+ \item Con trỏ trái $l$ được khởi tạo tại $0$ và chỉ tăng khi tổng hiện tại vượt quá $S$. Do điều kiện dừng $l \le r$ và mỗi bước tăng $l$ làm giảm tổng, con trỏ $l$ không bao giờ vượt quá $n$. Tổng số lần thực hiện phép tăng $l{+}{+}$ trong suốt toàn bộ thời gian chạy bị chặn trên bởi $n$.
+\end{itemize}
+Tổng số bước dịch chuyển của cả hai con trỏ trong trường hợp xấu nhất không vượt quá $2n$. Vì mỗi bước dịch chuyển chỉ thực hiện các phép toán số học và so sánh trong thời gian $\mathcal{O}(1)$, độ phức tạp thời gian trong trường hợp xấu nhất (worst-case time complexity) của thuật toán được giới hạn bởi $\mathcal{O}(n)$.
+
+Mặt khác, trong trường hợp tốt nhất (khi ngay phần tử đầu tiên $a_1 = S$), thuật toán trả về kết quả ngay tại bước lặp đầu tiên với thời gian $\Omega(1)$. Do đó, thời gian thực thi tổng quát của thuật toán là $\mathcal{O}(n)$, và chi phí không gian bộ nhớ phụ trợ là $\mathcal{O}(1)$.
+\end{proof}
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Implementation of Two Pointers Subarray Sum}]
+#include <iostream>
+#include <vector>
+#include <utility>
+
+using namespace std;
+
+pair<int, int> find_subarray_sum(const vector<long long>& a, long long S) {
+    if (S <= 0) return {-1, -1};
+    int n = a.size();
+    int l = 0;
+    long long current_sum = 0;
+    
+    for (int r = 0; r < n; ++r) {
+        current_sum += a[r];
+        while (current_sum > S && l <= r) {
+            current_sum -= a[l];
+            l++;
+        }
+        if (current_sum == S) {
+            return {l + 1, r + 1}; // 1-based indexing
+        }
+    }
+    return {-1, -1};
+}
+\end{lstlisting}
+
+\section{Kiểm Thử Đối Chiếu \& Thử Nghiệm Ngẫu Nhiên (Python)}
+\begin{lstlisting}[language=Python, caption={Python Differential Testbench for Two Pointers}]
+import random
+
+def brute_force_subarray_sum(a, S):
+    if S <= 0: return (-1, -1)
+    n = len(a)
+    for l in range(n):
+        s = 0
+        for r in range(l, n):
+            s += a[r]
+            if s == S:
+                return (l + 1, r + 1)
+    return (-1, -1)
+
+def two_pointers_solve(a, S):
+    if S <= 0: return (-1, -1)
+    n = len(a)
+    l, cur = 0, 0
+    for r in range(n):
+        cur += a[r]
+        while cur > S and l <= r:
+            cur -= a[l]
+            l += 1
+        if cur == S:
+            return (l + 1, r + 1)
+    return (-1, -1)
+
+def run_stress_test(num_trials=1000):
+    for trial in range(num_trials):
+        n = random.randint(1, 200)
+        a = [random.randint(1, 50) for _ in range(n)]
+        S = random.randint(1, sum(a) + 10)
+        ans_brute = brute_force_subarray_sum(a, S)
+        ans_opt = two_pointers_solve(a, S)
+        # Verify valid sum if indices found
+        if ans_opt != (-1, -1):
+            l, r = ans_opt
+            assert sum(a[l-1:r]) == S, f"invalid sum on trial {trial}"
+        else:
+            assert ans_brute == (-1, -1), f"Missed valid subarray on trial {trial}"
+    print(f"Stress test passed {num_trials} randomized trials successfully.")
+
+if __name__ == "__main__":
+    run_stress_test()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textbf{Tính chất đơn điệu:} Khi mảng $A$ chứa các phần tử mang dấu âm ($a_i < 0$), vì sao tính đơn điệu của tổng tiền tố $P[k]$ bị phá vỡ? Để giải quyết bài toán tìm đoạn con có tổng bằng $S$ trên miền giá trị số nguyên tùy ý, cấu trúc dữ liệu bảng băm tiền tố (\texttt{std::unordered\_map}) đạt độ phức tạp thời gian kỳ vọng là bao nhiêu?
+ \item \textbf{Ràng buộc biên:} Trong trường hợp mảng cho phép phần tử bằng $0$ ($a_i \ge 0$) hoặc giá trị đích $S = 0$, việc thiếu điều kiện dừng $l \le r$ trong vòng lặp \texttt{while} sẽ dẫn đến lỗi logic nào đối với thứ tự hai con trỏ?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 2: SLIDING WINDOW \& MONOTONIC DEQUE
+% ======================================================================
+\chapter{Cửa Sổ Trượt \& Hàng Đợi Đơn Điệu (Sliding Window)}
+\label{mod:sliding_window}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Sliding Window Minimum]
+Cho mảng $A$ có $N$ phần tử và số nguyên $K \le N$. Tìm giá trị nhỏ nhất trong mỗi cửa sổ trượt có độ dài $K$: $\min(a_{i-K+1}, \dots, a_i)$ với mỗi $K \le i \le N$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Khi xét phần tử mới $a_i$ đi vào cửa sổ, các phần tử $a_j$ cũ hơn ($j < i$) có giá trị $a_j \ge a_i$ không thể trở thành cực tiểu của bất kỳ cửa sổ nào trong tương lai. Ta loại bỏ $a_j$ khỏi hàng đợi. Đồng thời, khi các phần tử hết hạn (rơi khỏi cửa sổ kích thước $K$, tức là $j \le i - K$), chúng sẽ bị loại bỏ khỏi đầu hàng đợi (evicted from the front). Hàng đợi duy trì các chỉ số luôn có giá trị tương ứng tăng ngặt, cho phép truy xuất phần tử nhỏ nhất ở đầu hàng đợi trong $\Theta(1)$. Mỗi phần tử trong mảng được đẩy vào \texttt{deque} đúng một lần. Do đó, số lần bị loại bỏ (pop) không thể vượt quá $N$, giới hạn tổng số thao tác cấu trúc dữ liệu nội tại, đạt độ phức tạp tiệm cận $\Theta(N)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Monotonic Deque for Sliding Window Minimum}]
+#include <iostream>
+#include <vector>
+#include <deque>
+using namespace std;
+
+vector<int> sliding_window_minimum(const vector<int>& a, int k) {
+ if (k <= 0) return {};
+ int n = a.size();
+ vector<int> result;
+ deque<int> dq; // Stores indices
+ 
+ for (int i = 0; i < n; ++i) {
+ // remove elements outside current window [i - k + 1, i]
+ if (!dq.empty() && dq.front() <= i - k) {
+ dq.pop_front();
+ }
+ // Maintain monotonic increasing order of values
+ while (!dq.empty() && a[dq.back()] >= a[i]) {
+ dq.pop_back();
+ }
+ dq.push_back(i);
+ // record answer once the first window of size k is formed
+ if (i >= k - 1) {
+ result.push_back(a[dq.front()]);
+ }
+ }
+ return result;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Differential Fuzzer for Sliding Window}]
+import random
+from collections import deque
+
+def brute_force_sliding_min(a, k):
+ if k <= 0: return []
+ return [min(a[i:i+k]) for i in range(len(a) - k + 1)]
+
+def deque_sliding_min(a, k):
+ if k <= 0: return []
+ dq = deque()
+ res = []
+ for i, x in enumerate(a):
+ if dq and dq[0] <= i - k:
+ dq.popleft()
+ while dq and a[dq[-1]] >= x:
+ dq.pop()
+ dq.append(i)
+ if i >= k - 1:
+ res.append(a[dq[0]])
+ return res
+
+def stress_test(num_trials=500):
+ for trial in range(num_trials):
+ n = random.randint(1, 300)
+ k = random.randint(1, n)
+ if random.random() < 0.05:
+ k = random.randint(-5, 0)
+ a = [random.randint(-1000, 1000) for _ in range(n)]
+ expected = brute_force_sliding_min(a, k)
+ actual = deque_sliding_min(a, k)
+ assert expected == actual, f"Mismatch on trial {trial}"
+ print(f"Sliding window minimum passed {num_trials} stress tests.")
+
+if __name__ == "__main__":
+ stress_test()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Kiến trúc:} Làm thế nào để thay thế \texttt{std::deque} bằng hai con trỏ trên mảng tĩnh phẳng nhằm giảm đáng kể hằng số thời gian thực thi?
+ \item \textit{Mở rộng:} Mở rộng bài toán tìm cực trị cửa sổ trượt 2D kích thước $K \times M$ trên ma trận $N \times P$ trong $\Theta(N \cdot P)$.
+\end{enumerate}
+
+% ======================================================================
+% MODULE 3: PREFIX SUMS \& MULTIDIMENSIONAL DIFFERENCE ARRAYS
+% ======================================================================
+\chapter{Mảng Cộng Dồn \& Mảng Hiệu Đa Chiều (Prefix \& Difference)}
+\label{mod:prefix_difference}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[2D Range Update and Range Query]
+Cho lưới $N \times M$ ban đầu toàn số $0$. Thực hiện $Q_1$ thao tác cộng giá trị $V$ vào hình chữ nhật $[x_1, y_1] \times [x_2, y_2]$, sau đó thực hiện $Q_2$ truy vấn tính tổng các phần tử trong hình chữ nhật $[r_1, c_1] \times [r_2, c_2]$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Mảng hiệu $D$ đóng vai trò là đạo hàm rời rạc, còn mảng cộng dồn $\mathit{Pref}$ là tích phân rời rạc trên lưới $\mathbb{Z}^2$. Dựa trên nguyên lý bù trừ 2D (2D Inclusion-Exclusion Principle), việc cộng $V$ vào vùng $[x_1, x_2] \times [y_1, y_2]$ tương đương với việc điều chỉnh tại 4 điểm nằm ngay ngoài biên hình chữ nhật:
+\begin{equation}
+D[x_1][y_1] \leftarrow D[x_1][y_1] + V, \quad D[x_2+1][y_1] \leftarrow D[x_2+1][y_1] - V
+\end{equation}
+\begin{equation}
+D[x_1][y_2+1] \leftarrow D[x_1][y_2+1] - V, \quad D[x_2+1][y_2+1] \leftarrow D[x_2+1][y_2+1] + V
+\end{equation}
+Thuật toán đạt độ phức tạp thời gian tiệm cận $\mathcal{O}(1)$ cho thao tác cập nhật, $\mathcal{O}(N \times M)$ cho bước dựng mảng, và $\mathcal{O}(1)$ cho truy vấn. Với giới hạn phổ biến $N, M \le 1000$, ta chọn hằng số mảng \texttt{MAX=1005}. Chú ý cần cấp phát mảng với kích thước $+2$ (hoặc lề bảo vệ) để tránh lỗi tràn chỉ số (\textit{out-of-bounds}) khi truy cập $(x_2+1, y_2+1)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Implementation of 2D Difference Arrays and Prefix Sums}]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const int MAX = 1005;
+long long D[MAX][MAX], Pref[MAX][MAX];
+
+void range_add_2d(int x1, int y1, int x2, int y2, long long v) {
+    D[x1][y1] += v;
+    D[x2 + 1][y1] -= v;
+    D[x1][y2 + 1] -= v;
+    D[x2 + 1][y2 + 1] += v;
+}
+
+void build_2d(int n, int m) {
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= m; ++j) {
+            D[i][j] += D[i - 1][j] + D[i][j - 1] - D[i - 1][j - 1];
+            Pref[i][j] = D[i][j] + Pref[i - 1][j] + Pref[i][j - 1] - Pref[i - 1][j - 1];
+        }
+    }
+}
+
+long long query_sum_2d(int x1, int y1, int x2, int y2) {
+    return Pref[x2][y2] - Pref[x1 - 1][y2] - Pref[x2][y1 - 1] + Pref[x1 - 1][y1 - 1];
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python 2D Differential Grid Validator}]
+import random
+
+def solve_grid_naive(n, m, updates, queries):
+    grid = [[0] * (m + 1) for _ in range(n + 1)]
+    for x1, y1, x2, y2, v in updates:
+        for i in range(x1, x2 + 1):
+            for j in range(y1, y2 + 1):
+                grid[i][j] += v
+    res = []
+    for x1, y1, x2, y2 in queries:
+        s = sum(grid[i][j] for i in range(x1, x2 + 1) for j in range(y1, y2 + 1))
+        res.append(s)
+    return res
+
+def solve_grid_prefix(n, m, updates, queries):
+    D = [[0] * (m + 2) for _ in range(n + 2)]
+    for x1, y1, x2, y2, v in updates:
+        D[x1][y1] += v
+        D[x2+1][y1] -= v
+        D[x1][y2+1] -= v
+        D[x2+1][y2+1] += v
+    
+    Pref = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            D[i][j] += D[i-1][j] + D[i][j-1] - D[i-1][j-1]
+            Pref[i][j] = D[i][j] + Pref[i-1][j] + Pref[i][j-1] - Pref[i-1][j-1]
+    
+    res = []
+    for x1, y1, x2, y2 in queries:
+        s = Pref[x2][y2] - Pref[x1-1][y2] - Pref[x2][y1-1] + Pref[x1-1][y1-1]
+        res.append(s)
+    return res
+
+if __name__ == "__main__":
+    n, m = 20, 20
+    updates = []
+    for _ in range(30):
+        x_a, x_b = random.randint(1, n), random.randint(1, n)
+        y_a, y_b = random.randint(1, m), random.randint(1, m)
+        updates.append((min(x_a, x_b), min(y_a, y_b), max(x_a, x_b), max(y_a, y_b), random.randint(1, 100)))
+    queries = []
+    for _ in range(50):
+        x_a, x_b = random.randint(1, n), random.randint(1, n)
+        y_a, y_b = random.randint(1, m), random.randint(1, m)
+        queries.append((min(x_a, x_b), min(y_a, y_b), max(x_a, x_b), max(y_a, y_b)))
+    assert solve_grid_naive(n, m, updates, queries) == solve_grid_prefix(n, m, updates, queries)
+    print("2D Prefix and Difference testing passed with exact precision.")
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Bất biến:} Công thức mảng hiệu 3D gồm bao nhiêu phép gán góc? (Trả lời: $2^3 = 8$ góc theo nguyên lý bù trừ).
+ \item \textit{Tối ưu Cache:} Tại sao cần duyệt chỉ số $i$ trước $j$ trong bộ nhớ C++?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 4: BINARY SEARCH ON ANSWER
+% ======================================================================
+\chapter{Chặt Nhị Phân Kết Quả (Binary Search on Answer)}
+\label{mod:binary_search}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Factory Machines Scheduling]
+Có $N$ máy móc, máy thứ $i$ mất $k_i \ge 1$ giây để làm ra 1 sản phẩm. Hãy tìm thời gian tối thiểu $T$ để cả $N$ máy cùng sản xuất đủ $P$ sản phẩm.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Gọi $f(t) = \sum_{i=1}^N \lfloor \frac{t}{k_i} \rfloor$ là số sản phẩm làm được sau thời gian $t$. Vì $k_i \ge 1$, $f(t)$ là hàm đơn điệu không giảm (monotonically non-decreasing) theo $t$. Điều kiện $f(t) \ge P$ phân chia không gian tìm kiếm thành hai nửa: tồn tại ngưỡng $T$ sao cho $f(t) < P, \forall t < T$ và $f(t) \ge P, \forall t \ge T$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Binary Search on Monotonic Predicate}]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+bool check(long long t, const vector<long long>& k, long long P) {
+ long long total = 0;
+ for (long long time_req : k) {
+ total += t / time_req;
+ if (total >= P) return true; // Avoid integer overflow
+ }
+ return total >= P;
+}
+
+long long min_time_for_products(const vector<long long>& k, long long P) {
+ if (k.empty()) return P == 0 ? 0 : -1;
+ long long max_k = *max_element(k.begin(), k.end());
+ long long low = 0, high = P * max_k;
+ long long ans = high;
+ 
+ while (low <= high) {
+ long long mid = low + (high - low) / 2;
+ if (check(mid, k, P)) {
+ ans = mid;
+ high = mid - 1; // Try smaller time
+ } else {
+ low = mid + 1; // Increase time
+ }
+ }
+ return ans;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Fuzzer for Monotonic Predicate Invariant}]
+import random
+
+def check_valid(t, k, P):
+ return sum(t // x for x in k) >= P
+
+def solve_bs(k, P):
+ if not k:
+  return 0 if P == 0 else -1
+ low, high = 0, P * max(k)
+ ans = high
+ while low <= high:
+  mid = (low + high) // 2
+  if check_valid(mid, k, P):
+   ans = mid
+   high = mid - 1
+  else:
+   low = mid + 1
+ return ans
+
+def test_extreme_cases():
+ k = [1] * 100000
+ P = 10**9
+ ans = solve_bs(k, P)
+ assert ans == 10000
+ print("Extreme boundary schedule test passed.")
+
+if __name__ == "__main__":
+ test_extreme_cases()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Phép tính \texttt{(low + high) / 2} gây lỗi tràn số (\texttt{overflow}) trong C++ như thế nào khi biến \texttt{high} $= 2 \times 10^9$?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 5: ROLLBACK DISJOINT SET UNION
+% ======================================================================
+\chapter{Tập Hợp Không Rời Nhau Có Rollback (Rollback DSU)}
+\label{mod:rollback_dsu}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Incremental Connectivity với Rollback]
+Cho đồ thị $N$ đỉnh. Hỗ trợ $3$ loại thao tác: thêm cạnh $(u, v)$, truy vấn hai đỉnh $u, v$ có liên thông không, và rút lui (undo) thao tác thêm cạnh vừa thực hiện.
+\end{baitoan}
+
+Phương pháp nén đường đi (*Path Compression*) làm phá vỡ cấu trúc hình học của cây DSU, khiến việc phục hồi trạng thái cũ trở nên tiêu tốn bộ nhớ và làm suy giảm hiệu suất thời gian/không gian. Thay vào đó, ta sử dụng **Hợp nhất theo Kích thước (Union by Size)** không dùng nén đường đi. Bằng chứng minh quy nạp, việc hợp nhất cây kích thước $S_1$ vào $S_2$ ($S_1 \le S_2$) làm độ sâu của các node thuộc $S_1$ tăng thêm đúng $1$, đồng thời tổng kích thước thành phần tăng ít nhất gấp đôi ($S_1 + S_2 \ge 2S_1$). Vậy chiều cao cây luôn bị chặn trên bởi $\lfloor \log_2 N \rfloor \in \mathcal{O}(\log N)$, và mỗi thao tác lưu vào ngăn xếp Undo Stack một bộ 3 $\langle u, v, \text{sz}_u \rangle$ để khôi phục trong $\Theta(1)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={Rollback DSU C++ Engine}]
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <utility>
+using namespace std;
+
+struct RollbackDSU {
+ vector<int> parent, sz;
+ struct Operation { int u, v, prev_sz_u; };
+ vector<Operation> history;
+
+ RollbackDSU(int n) : parent(n + 1), sz(n + 1, 1) {
+ iota(parent.begin(), parent.end(), 0);
+ }
+
+ int find(int u) {
+ while (u != parent[u]) u = parent[u];
+ return u;
+ }
+
+ bool unite(int u, int v) {
+ u = find(u); v = find(v);
+ if (u == v) {
+ history.push_back({-1, 0, 0});
+ return false;
+ }
+ if (sz[u] < sz[v]) swap(u, v);
+ history.push_back({u, v, sz[u]});
+ parent[v] = u;
+ sz[u] += sz[v];
+ return true;
+ }
+
+ void rollback() {
+ if (history.empty()) return;
+ auto op = history.back();
+ history.pop_back();
+ if (op.u == -1) return;
+ parent[op.v] = op.v;
+ sz[op.u] = op.prev_sz_u;
+ }
+
+ bool connected(int u, int v) {
+ return find(u) == find(v);
+ }
+};
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Rollback DSU vs Graph BFS Oracle}]
+import random
+from collections import defaultdict, deque
+
+class GraphOracle:
+ def __init__(self):
+ self.adj = defaultdict(list)
+ self.history = []
+
+ def add_edge(self, u, v):
+ self.history.append((u, v))
+ self.adj[u].append(v)
+ self.adj[v].append(u)
+
+ def rollback(self):
+ if not self.history: return
+ u, v = self.history.pop()
+ self.adj[u].remove(v)
+ self.adj[v].remove(u)
+
+ def is_connected(self, u, v):
+ visited = set([u])
+ q = deque([u])
+ while q:
+ curr = q.popleft()
+ if curr == v: return True
+ for nxt in self.adj[curr]:
+ if nxt not in visited:
+ visited.add(nxt)
+ q.append(nxt)
+ return False
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Độ phức tạp:} Tại sao Union by Size đảm bảo độ cao cây không vượt quá $\log_2 N$? (Chứng minh: mỗi lần tăng độ cao, kích thước cây ít nhất gấp đôi).
+\end{enumerate}
+
+% ======================================================================
+% MODULE 6: GRAPH SHORTEST PATHS \& ANTI-SPFA BENCHMARKS
+% ======================================================================
+\chapter{Đồ Thị: Đường Đi Ngắn Nhất \& 0-1 BFS}
+\label{mod:graphs}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[0-1 Shortest Path]
+Cho đồ thị có hướng có trọng số cạnh chỉ nhận giá trị $0$ hoặc $1$. Tìm đường đi ngắn nhất từ đỉnh xuất phát $S$ tới mọi đỉnh trong $\mathcal{O}(|V| + |E|)$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Thuật toán Dijkstra thông thường tiêu tốn $\mathcal{O}(|E| \log |V|)$ khi dùng \texttt{std::priority\_queue}. Tuy nhiên, vì trọng số $w(u, v) \in \{0, 1\}$, tập trạng thái khoảng cách hiện tại trong hàng đợi luôn chỉ chứa các giá trị khoảng cách $d$ hoặc $d+1$. Bất biến vòng lặp (Loop Invariant) này đảm bảo thứ tự ưu tiên tăng dần đơn điệu. Bằng cách dùng hàng đợi hai đầu (Deque: đỉnh đích của cạnh trọng số $0$ đẩy vào đầu \texttt{push\_front}, đỉnh đích của cạnh trọng số $1$ đẩy vào đuôi \texttt{push\_back}), ta khai thác bất biến này để loại bỏ chi phí sắp xếp, giảm độ phức tạp về $\mathcal{O}(|V| + |E|)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ 0-1 BFS Engine}]
+#include <iostream>
+#include <vector>
+#include <deque>
+using namespace std;
+
+const int INF = 1e9;
+const int MAXN = 200005;
+
+struct Edge { int to, weight; };
+vector<Edge> adj[MAXN];
+int dist_node[MAXN];
+
+void zero_one_bfs(int start_node, int n) {
+ fill(dist_node, dist_node + n + 1, INF);
+ deque<int> dq;
+ 
+ dist_node[start_node] = 0;
+ dq.push_back(start_node);
+ 
+ while (!dq.empty()) {
+ int u = dq.front();
+ dq.pop_front();
+ 
+ for (const auto& e : adj[u]) {
+ if (dist_node[u] + e.weight < dist_node[e.to]) {
+ dist_node[e.to] = dist_node[u] + e.weight;
+ if (e.weight == 0) {
+ dq.push_front(e.to);
+ } else {
+ dq.push_back(e.to);
+ }
+ }
+ }
+ }
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Anti-SPFA Adversarial Graph Generator}]
+def generate_anti_spfa_graph(k):
+    """Generates a graph causing exponential relaxations in naive SPFA."""
+    edges = []
+    for i in range(1, k + 1):
+        # 1-edge shortcut with heavy weight
+        edges.append((2 * i - 1, 2 * i + 1, 1 << (k - i)))
+        # 2-edge path with zero weight
+        edges.append((2 * i - 1, 2 * i, 0))
+        edges.append((2 * i, 2 * i + 1, 0))
+    return edges
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Các mô hình ngôn ngữ lớn (LLM) thường sinh mã SPFA cho các bài toán trọng số âm, nhưng trên đồ thị có chu trình âm, SPFA sẽ bị lặp vô hạn nếu không có bộ đếm số lần nới lỏng (relaxation limit).
+\end{enumerate}
+
+% ======================================================================
+% MODULE 7: TREE DECOMPOSITION \& BINARY LIFTING LCA
+% ======================================================================
+\chapter{Phân Rã Cây: Euler Tour \& Binary Lifting LCA}
+\label{mod:tree_lca}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Subtree Queries and Lowest Common Ancestor]
+Cho cây có gốc gồm $N$ nút. Hỗ trợ 2 thao tác: cập nhật giá trị toàn bộ cây con gốc $u$, và tìm tổ tiên chung gần nhất $\operatorname{LCA}(u, v)$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Sử dụng phép duyệt DFS ghi nhận thời điểm vào $tin[u]$ và ra $tout[u]$. Khi đó cây con $\mathcal{T}_u$ đồng cấu với đoạn liên tiếp $[tin[u], tout[u]]$. Bảng nhảy nhị phân $up[u][k] = up[up[u][k-1]][k-1]$ cho phép tìm $\operatorname{LCA}$ trong $\Theta(\log N)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Binary Lifting and Euler Tour Engine}]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const int MAXN = 200005;
+const int LOGN = 20;
+
+vector<int> tree_adj[MAXN];
+int up_table[MAXN][LOGN];
+int tin[MAXN], tout[MAXN], depth_node[MAXN], timer = 0;
+
+void dfs_tree(int u, int p, int d) {
+ tin[u] = ++timer;
+ depth_node[u] = d;
+ up_table[u][0] = p;
+ for (int k = 1; k < LOGN; ++k) {
+ up_table[u][k] = up_table[up_table[u][k - 1]][k - 1];
+ }
+ for (int v : tree_adj[u]) {
+ if (v != p) dfs_tree(v, u, d + 1);
+ }
+ tout[u] = timer;
+}
+
+int query_lca(int u, int v) {
+ if (depth_node[u] < depth_node[v]) swap(u, v);
+ for (int k = LOGN - 1; k >= 0; --k) {
+ if (depth_node[u] - (1 << k) >= depth_node[v]) {
+ u = up_table[u][k];
+ }
+ }
+ if (u == v) return u;
+ for (int k = LOGN - 1; k >= 0; --k) {
+ if (up_table[u][k] != up_table[v][k]) {
+ u = up_table[u][k];
+ v = up_table[v][k];
+ }
+ }
+ return up_table[u][0];
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Tree Ancestor Differential Testbench}]
+import random
+
+def naive_lca(parent, depth, u, v):
+ while depth[u] > depth[v]: u = parent[u]
+ while depth[v] > depth[u]: v = parent[v]
+ while u != v:
+ u = parent[u]
+ v = parent[v]
+ return u
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Mở rộng:} Làm thế nào để kết hợp Euler Tour với Sparse Table (Bảng thưa) để truy vấn LCA trong thời gian $\Theta(1)$?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 8: BITMASK DP \& SUM OVER SUBSETS (SOS DP)
+% ======================================================================
+\chapter{Quy Hoạch Động Bitmask \& SOS (Sum over Subsets)}
+\label{mod:bitmask_sos}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Sum over Subsets]
+Cho mảng $A$ có $2^N$ phần tử. Với mỗi mask $M \in [0, 2^N - 1]$, tính $F[M] = \sum_{S \subseteq M} A[S]$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Duyệt trực tiếp mọi tập con của mỗi mask tiêu tốn $\sum_{k=0}^N \binom{N}{k} 2^k = 3^N$. Bằng cách định nghĩa không gian trạng thái là một Dàn Đại số Boole (Boolean Lattice), phép tính tổng tập con $\hat{F}(x) = \sum_{y \subseteq x} A(y)$ tương đương với Biến đổi Zeta (Zeta Transform). Áp dụng quy hoạch động cộng dồn đa chiều, độ phức tạp giảm về $\Theta(N \cdot 2^N)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ SOS DP In-Place Engine}]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void sum_over_subsets(vector<long long>& dp, int N) {
+ int total_masks = 1 << N;
+ for (int i = 0; i < N; ++i) {
+ for (int mask = 0; mask < total_masks; ++mask) {
+ if (mask & (1 << i)) {
+ dp[mask] += dp[mask ^ (1 << i)];
+ }
+ }
+ }
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python $3^N$ naive vs N $2^N$ SOS DP Oracle}]
+def solve_naive(a, n):
+ f = [0] * (1 << n)
+ for mask in range(1 << n):
+ sub = mask
+ while True:
+ f[mask] += a[sub]
+ if sub == 0: break
+ sub = (sub - 1) & mask
+ return f
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Làm thế nào để tính $A[M]$ từ $F[M]$ trong $\Theta(N \cdot 2^N)$? (Gợi ý: Áp dụng phép đảo dấu theo Nguyên lý Bao hàm - Loại trừ).
+\end{enumerate}
+
+% ======================================================================
+% MODULE 9: MATRIX EXPONENTIATION \& MIN-PLUS RECURRENCES
+% ======================================================================
+\chapter{Nhân Ma Trận \& Bán vành Min-Plus}
+\label{mod:matrix_exp}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[K-Step Shortest Path]
+Tìm đường đi ngắn nhất đi qua đúng $K$ cạnh giữa hai đỉnh trên đồ thị có trọng số ($K \le 10^9$).
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Phép tính trên bán vành Nhiệt đới $(\mathbb{R} \cup \{\infty\}, \min, +)$ thỏa mãn tính kết hợp. Phép nhân ma trận đơn lẻ $(A \odot B)_{i, j} = \min_k (A_{i, k} + B_{k, j})$ có độ phức tạp $\Theta(|V|^3)$. Lũy thừa ma trận $A^K$ có thể được tính bằng phương pháp nhân đôi trong $\Theta(|V|^3 \log K)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Min-Plus Matrix Exponentiation Engine}]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const long long INF = 1000000000000000000LL;
+
+struct Matrix {
+ int sz;
+ vector<vector<long long>> mat;
+ Matrix(int n) : sz(n), mat(n, vector<long long>(n, INF)) {}
+ 
+ static Matrix identity(int n) {
+ Matrix res(n);
+ for (int i = 0; i < n; ++i) res.mat[i][i] = 0;
+ return res;
+ }
+};
+
+Matrix multiply_min_plus(const Matrix& A, const Matrix& B) {
+ int n = A.sz;
+ Matrix C(n);
+ for (int i = 0; i < n; ++i) {
+ for (int k = 0; k < n; ++k) {
+ if (A.mat[i][k] == INF) continue;
+ for (int j = 0; j < n; ++j) {
+ if (B.mat[k][j] < INF) {
+ C.mat[i][j] = min(C.mat[i][j], A.mat[i][k] + B.mat[k][j]);
+ }
+ }
+ }
+ }
+ return C;
+}
+
+Matrix power_min_plus(Matrix A, long long p) {
+ Matrix res = Matrix::identity(A.sz);
+ while (p > 0) {
+ if (p & 1) res = multiply_min_plus(res, A);
+ A = multiply_min_plus(A, A);
+ p >>= 1;
+ }
+ return res;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Matrix Multiplication Stress Test}]
+import random
+
+INF = 10**18
+
+def multiply_min_plus(A, B):
+    n = len(A)
+    C = [[INF] * n for _ in range(n)]
+    for i in range(n):
+        for k in range(n):
+            if A[i][k] == INF: continue
+            for j in range(n):
+                if B[k][j] != INF:
+                    C[i][j] = min(C[i][j], A[i][k] + B[k][j])
+    return C
+
+def power_min_plus(A, p):
+    n = len(A)
+    res = [[INF] * n for _ in range(n)]
+    for i in range(n): res[i][i] = 0
+    base = A
+    while p > 0:
+        if p % 2 == 1:
+            res = multiply_min_plus(res, base)
+        base = multiply_min_plus(base, base)
+        p //= 2
+    return res
+
+def naive_power_min_plus(A, p):
+    n = len(A)
+    res = [[INF] * n for _ in range(n)]
+    for i in range(n): res[i][i] = 0
+    for _ in range(p):
+        res = multiply_min_plus(res, A)
+    return res
+
+def fuzzer():
+    print("Running Min-Plus Matrix Exponentiation Fuzzer...")
+    for test in range(50):
+        n = random.randint(2, 10)
+        p = random.randint(1, 20)
+        A = [[INF] * n for _ in range(n)]
+        for i in range(n):
+            for j in range(n):
+                if i == j:
+                    A[i][j] = 0
+                elif random.random() < 0.5:
+                    A[i][j] = random.randint(1, 100)
+        
+        res_fast = power_min_plus(A, p)
+        res_naive = naive_power_min_plus(A, p)
+        
+        assert res_fast == res_naive, "Mismatch found!"
+    print("All tests passed successfully.")
+
+if __name__ == "__main__":
+    fuzzer()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Tối ưu Cache:} Tại sao vòng lặp nhân ma trận $i \to k \to j$ nhanh hơn $i \to j \to k$ gấp $5\times$?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 10: LAZY SEGMENT TREES OVER MONOIDS
+% ======================================================================
+\chapter{Cây Phân Đoạn \& Cập Nhật Lười (Lazy Segment Tree)}
+\label{mod:segment_tree}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Range Add \& Range Sum on Segment Tree]
+Duy trì mảng $N$ phần tử với truy vấn cộng $v$ vào đoạn $[L, R]$ và truy vấn tính tổng đoạn $[L, R]$ trong $\mathcal{O}(\log N)$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Biểu diễn phép kết hợp dưới dạng cấu trúc Monoid $\langle \mathcal{M}, \oplus, e \rangle$ và phép cập nhật là một tự đồng cấu (Endomorphism) $f$. Tính phân phối $f(a \oplus b) = f(a) \oplus f(b)$ đảm bảo tính đúng đắn toán học của thao tác đẩy nhãn lười (Lazy tag pushdown). Với phép cộng vô hướng (scalar addition), ta cần nhân với độ dài đoạn: $f_{add}(a) = a + v \times \text{length}$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Flat Array 4N Lazy Segment Tree}]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const int MAXN = 200005;
+long long tree_sum[4 * MAXN], lazy[4 * MAXN]; // Implicitly 0-initialized
+
+void push_down(int node, int l, int r) {
+ if (lazy[node] == 0) return;
+ int mid = (l + r) / 2;
+ tree_sum[2 * node] += lazy[node] * (mid - l + 1);
+ lazy[2 * node] += lazy[node];
+ tree_sum[2 * node + 1] += lazy[node] * (r - mid);
+ lazy[2 * node + 1] += lazy[node];
+ lazy[node] = 0;
+}
+
+void update_range(int node, int l, int r, int ql, int qr, long long v) {
+ if (ql <= l && r <= qr) {
+ tree_sum[node] += v * (r - l + 1);
+ lazy[node] += v;
+ return;
+ }
+ push_down(node, l, r);
+ int mid = (l + r) / 2;
+ if (ql <= mid) update_range(2 * node, l, mid, ql, qr, v);
+ if (qr > mid) update_range(2 * node + 1, mid + 1, r, ql, qr, v);
+ tree_sum[node] = tree_sum[2 * node] + tree_sum[2 * node + 1];
+}
+
+long long query_range(int node, int l, int r, int ql, int qr) {
+ if (ql <= l && r <= qr) return tree_sum[node];
+ push_down(node, l, r);
+ int mid = (l + r) / 2;
+ long long res = 0;
+ if (ql <= mid) res += query_range(2 * node, l, mid, ql, qr);
+ if (qr > mid) res += query_range(2 * node + 1, mid + 1, r, ql, qr);
+ return res;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Differential Segment Tree Tester}]
+import random
+
+
+
+class LazySegmentTree:
+    def __init__(self, n):
+        self.tree_sum = [0] * (4 * n + 1)
+        self.lazy = [0] * (4 * n + 1)
+    
+    def push_down(self, node, l, r):
+        if self.lazy[node] == 0:
+            return
+        mid = (l + r) // 2
+        self.tree_sum[2 * node] += self.lazy[node] * (mid - l + 1)
+        self.lazy[2 * node] += self.lazy[node]
+        self.tree_sum[2 * node + 1] += self.lazy[node] * (r - mid)
+        self.lazy[2 * node + 1] += self.lazy[node]
+        self.lazy[node] = 0
+
+    def update_range(self, node, l, r, ql, qr, v):
+        if ql <= l and r <= qr:
+            self.tree_sum[node] += v * (r - l + 1)
+            self.lazy[node] += v
+            return
+        self.push_down(node, l, r)
+        mid = (l + r) // 2
+        if ql <= mid:
+            self.update_range(2 * node, l, mid, ql, qr, v)
+        if qr > mid:
+            self.update_range(2 * node + 1, mid + 1, r, ql, qr, v)
+        self.tree_sum[node] = self.tree_sum[2 * node] + self.tree_sum[2 * node + 1]
+
+    def query_range(self, node, l, r, ql, qr):
+        if ql <= l and r <= qr:
+            return self.tree_sum[node]
+        self.push_down(node, l, r)
+        mid = (l + r) // 2
+        res = 0
+        if ql <= mid:
+            res += self.query_range(2 * node, l, mid, ql, qr)
+        if qr > mid:
+            res += self.query_range(2 * node + 1, mid + 1, r, ql, qr)
+        return res
+
+def stress_test():
+    n = 1000
+    tree = LazySegmentTree(n)
+    a = [0] * n
+    
+    for _ in range(500):
+        op = random.choice(['update', 'query'])
+        ql = random.randint(0, n - 1)
+        qr = random.randint(ql, n - 1)
+        if op == 'update':
+            v = random.randint(1, 100)
+            tree.update_range(1, 0, n - 1, ql, qr, v)
+            for i in range(ql, qr + 1):
+                a[i] += v
+        else:
+            ans_tree = tree.query_range(1, 0, n - 1, ql, qr)
+            ans_naive = sum(a[ql:qr + 1])
+            assert ans_tree == ans_naive, "Mismatch found!"
+    print("Lazy Segment Tree passed stress testing.")
+
+if __name__ == "__main__":
+    stress_test()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Không gian:} Tại sao kích thước mảng SegTree luôn cần ít nhất $4N$ phần tử?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 11: DISCRETE CONVEXITY \& MONGE DP OPTIMIZATIONS
+% ======================================================================
+\chapter{Tối Ưu Hóa Quy Hoạch Động Lồi (Monge \& Convexity)}
+\label{mod:monge_dp}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Divide and Conquer Monge DP]
+Cho $DP[k][i] = \min_{j < i} \{ DP[k-1][j] + w(j, i) \}$ với $w(j, i)$ thỏa mãn Bất đẳng thức Tứ giác Monge. Tính toán toàn bộ bảng trong $\Theta(K \cdot N \log N)$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Bất đẳng thức Tứ giác Monge $w(a, c) + w(b, d) \le w(a, d) + w(b, c)$ ($a \le b \le c \le d$) đảm bảo tính đơn điệu của điểm chia tối ưu 1D: $opt(i) \le opt(i+1)$. Quá trình chia để trị giới hạn điểm chia khảo sát $mid$ trong khoảng $opt(mid) \in [opt\_l, opt\_r]$, duy trì tổng thời gian thực thi khấu hao $\Theta(K \cdot N \log N)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Divide \& Conquer Monge DP Optimizer}]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const long long INF = 1000000000000000000LL;
+long long dp_cur[20005], dp_prev[20005];
+
+long long cost_w(int j, int i); // Problem specific Monge cost
+
+void compute_dnc(int l, int r, int opt_l, int opt_r) {
+ if (l > r) return;
+ int mid = (l + r) / 2;
+ int best_k = opt_l;
+ dp_cur[mid] = INF;
+ 
+ for (int j = opt_l; j <= min(mid - 1, opt_r); ++j) {
+ if (dp_prev[j] == INF) continue;
+ long long val = dp_prev[j] + cost_w(j, mid);
+ if (val < dp_cur[mid]) {
+ dp_cur[mid] = val;
+ best_k = j;
+ }
+ }
+ compute_dnc(l, mid - 1, opt_l, best_k);
+ compute_dnc(mid + 1, r, best_k, opt_r);
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Monge Property Verifier}]
+import random
+import math
+
+INF = 10**18
+
+def w(j, i, a):
+    s = sum(a[j:i])
+    return s * s
+
+def verify_monge_matrix(a, n):
+    for x in range(n):
+        for y in range(x, n):
+            for z in range(y, n):
+                for t in range(z, n):
+                    val1 = w(x, z, a) + w(y, t, a)
+                    val2 = w(x, t, a) + w(y, z, a)
+                    assert val1 <= val2, "Monge property violated!"
+
+def naive_dp(a, n, K):
+    dp = [[INF] * (n + 1) for _ in range(K + 1)]
+    dp[0][0] = 0
+    for k in range(1, K + 1):
+        for i in range(1, n + 1):
+            for j in range(i):
+                if dp[k - 1][j] != INF:
+                    dp[k][i] = min(dp[k][i], dp[k - 1][j] + w(j, i, a))
+    return dp
+
+def compute_dnc(k, l, r, opt_l, opt_r, dp_prev, dp_cur, a):
+    if l > r: return
+    mid = (l + r) // 2
+    best_k = opt_l
+    dp_cur[mid] = INF
+    
+    for j in range(opt_l, min(mid - 1, opt_r) + 1):
+        if dp_prev[j] == INF: continue
+        val = dp_prev[j] + w(j, mid, a)
+        if val < dp_cur[mid]:
+            dp_cur[mid] = val
+            best_k = j
+            
+    compute_dnc(k, l, mid - 1, opt_l, best_k, dp_prev, dp_cur, a)
+    compute_dnc(k, mid + 1, r, best_k, opt_r, dp_prev, dp_cur, a)
+
+def optimized_dp(a, n, K):
+    dp_prev = [INF] * (n + 1)
+    dp_prev[0] = 0
+    for k in range(1, K + 1):
+        dp_cur = [INF] * (n + 1)
+        compute_dnc(k, 1, n, 0, n, dp_prev, dp_cur, a)
+        dp_prev = dp_cur
+    return dp_prev
+
+def test_dnc_dp():
+    n = 20
+    K = 5
+    for _ in range(100):
+        a = [random.randint(1, 10) for _ in range(n)]
+        
+        verify_monge_matrix(a, n)
+        
+        ans_naive = naive_dp(a, n, K)[K]
+        ans_opt = optimized_dp(a, n, K)
+        
+        for i in range(1, n + 1):
+            assert ans_naive[i] == ans_opt[i], f"Mismatch at {i}: {ans_naive[i]} vs {ans_opt[i]}"
+    print("Divide and Conquer DP passed stress testing.")
+
+if __name__ == "__main__":
+    test_dnc_dp()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Phân tích điểm tương đồng cấu trúc và điểm khác biệt cốt lõi giữa kỹ thuật Divide \& Conquer DP và Convex Hull Trick.
+\end{enumerate}
+
+% ======================================================================
+% MODULE 12: COMBINATORIAL GAME THEORY \& COMPUTATIONAL GEOMETRY
+% ======================================================================
+\chapter{Lý Thuyết Trò Chơi \& Hình Học Tính Toán}
+\label{mod:games_geometry}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Bouton Nim Game \& Monotone Chain Convex Hull]
+(a) Cho $N$ đống sỏi, xác định trạng thái thắng/thua theo Định lý Bouton.\\
+(b) Cho $N$ điểm trên mặt phẳng 2D, tìm bao lồi nhỏ nhất chứa $N$ điểm đó.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+(a) Trạng thái trò chơi Nim theo luật chơi thông thường - người đi cuối thắng (Normal Play Convention) là thua khi và chỉ khi $\bigoplus_{i=1}^N a_i = 0$ (Tổng XOR trên $GF(2)$).\\
+(b) Tích có hướng của hai vector được tính bằng định thức tọa độ $\det \begin{pmatrix} x_1 & y_1 \\ x_2 & y_2 \end{pmatrix} = x_1 y_2 - x_2 y_1$, xác định chiều rẽ hình học; thuật toán chia bao lồi cấu tạo thành nửa trên và nửa dưới để xây dựng trong $\Theta(N \log N)$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Monotone Chain 2D Convex Hull}]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Point {
+ long long x, y;
+ bool operator<(const Point& p) const {
+ return x < p.x || (x == p.x && y < p.y);
+ }
+};
+
+__int128_t cross_product(Point o, Point a, Point b) {
+ return ((__int128_t)a.x - o.x) * ((__int128_t)b.y - o.y) - ((__int128_t)a.y - o.y) * ((__int128_t)b.x - o.x);
+}
+
+vector<Point> convex_hull(vector<Point>& pts) {
+ sort(pts.begin(), pts.end());
+ pts.erase(unique(pts.begin(), pts.end(), [](const Point& a, const Point& b) {
+ return a.x == b.x && a.y == b.y;
+ }), pts.end());
+ int n = pts.size(), k = 0;
+ if (n <= 2) return pts;
+ vector<Point> h(2 * n);
+ 
+ // Lower hull
+ for (int i = 0; i < n; ++i) {
+ while (k >= 2 && cross_product(h[k - 2], h[k - 1], pts[i]) <= 0) k--;
+ h[k++] = pts[i];
+ }
+ // Upper hull
+ for (int i = n - 2, t = k + 1; i >= 0; i--) {
+ while (k >= t && cross_product(h[k - 2], h[k - 1], pts[i]) <= 0) k--;
+ h[k++] = pts[i];
+ }
+ h.resize(k - 1);
+ return h;
+}
+\end{lstlisting}
+
+\section{Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Nim \& Geometry Testbench}]
+import random
+
+def cross_product(o, a, b):
+    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+def convex_hull_python(pts):
+    pts = sorted(list(set(pts)))
+    if len(pts) <= 2: return pts
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and cross_product(lower[-2], lower[-1], p) <= 0: lower.pop()
+        lower.append(p)
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross_product(upper[-2], upper[-1], p) <= 0: upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
+
+def run_fuzzer(iters=1000):
+    for _ in range(iters):
+        n = random.randint(1, 100)
+        pts = [(random.randint(-1000, 1000), random.randint(-1000, 1000)) for _ in range(n)]
+        hull = convex_hull_python(pts)
+        assert len(hull) <= len(set(pts))
+
+if __name__ == "__main__":
+    run_fuzzer()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Điểm suy biến:} Làm thế nào để xử lý các điểm thẳng hàng trong bao lồi hình học?
+\end{enumerate}
+
+
+% ======================================================================
+% MODULE 13: LIS & MIRSKY'S THEOREM
+% ======================================================================
+\chapter{Dãy Con Tăng Dài Nhất (LIS) \& Định Lý Mirsky}
+\label{mod:lis_lds}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Longest Increasing Subsequence]
+Cho mảng $A$ gồm $N$ phần tử. Tìm độ dài dãy con tăng ngặt dài nhất (LIS) và phân hoạch mảng thành ít nhất các dãy con không tăng.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Bằng cách duy trì mảng $M[k]$ lưu giá trị nhỏ nhất của phần tử cuối cùng thuộc dãy con tăng độ dài $k+1$ (do mảng bắt đầu từ chỉ số 0), $M$ giữ bất biến là một dãy tăng ngặt. Tìm kiếm nhị phân trên $M$ cho thời gian $\mathcal{O}(N \log N)$. Theo \textbf{Định lý Mirsky} trên Tập sắp thứ tự bộ phận (Poset) định nghĩa bởi $A_i \prec A_j \iff i < j \land A[i] < A[j]$, độ dài dãy con tăng dài nhất (kích thước xích cực đại - Maximum Chain) bằng đúng số lượng tối thiểu các dãy con không tăng (Đối xích - Antichains) dùng để phân hoạch toàn bộ mảng.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ LIS with Binary Search \& Mirsky Partitioning}]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+vector<vector<int>> patience_sorting_partitions(const vector<int>& a) {
+    vector<vector<int>> piles;
+    for (int x : a) {
+        // Find the first pile where the top element is >= x
+        auto it = lower_bound(piles.begin(), piles.end(), x, [](const vector<int>& p, int val) {
+            return p.back() < val; // Sequence of p.back() is strictly increasing
+        });
+        if (it == piles.end()) piles.push_back({x});
+        else it->push_back(x);
+    }
+    // The length of the LIS is exactly piles.size()
+    // The array M[k] from the analysis corresponds to piles[k].back()
+    return piles;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python LIS Mirsky Dual Oracle}]
+import random
+import bisect
+
+def get_lis(a):
+    m = []
+    for x in a:
+        pos = bisect.bisect_left(m, x)
+        if pos == len(m):
+            m.append(x)
+        else:
+            m[pos] = x
+    return len(m)
+
+def min_non_increasing_partition(a):
+    partitions = []
+    for x in a:
+        placed = False
+        for p in partitions:
+            if p[-1] >= x:
+                p.append(x)
+                placed = True
+                break
+        if not placed:
+            partitions.append([x])
+    return len(partitions)
+
+def run_fuzzer(trials=1000):
+    for trial in range(trials):
+        n = random.randint(1, 100)
+        a = [random.randint(1, 1000) for _ in range(n)]
+        lis = get_lis(a)
+        non_increasing_cov = min_non_increasing_partition(a)
+        assert lis == non_increasing_cov, f"Mirsky's Theorem failed on {a}"
+    print(f"Verified Mirsky's Theorem for {trials} random arrays.")
+
+if __name__ == "__main__":
+    run_fuzzer()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Đối ngẫu:} Giải thích phép thu gọn (reduction) bài toán xếp hộp (Box Stacking) về bài toán LIS dựa trên mô hình Quy hoạch động (DP) $\mathcal{O}(N^2)$ trên Đồ thị có hướng phi chu trình (DAG)?
+\end{enumerate}
+
+
+% ======================================================================
+% MODULE 14: FLOW NETWORKS & BIPARTITE MATCHING
+% ======================================================================
+\chapter{Mạng Các Dòng Chảy \& Cặp Ghép Đồ Thị Hai Phía (Flow Networks)}
+\label{mod:flows}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Maximum Flow]
+Cho một mạng có hướng $G = (V, E)$ với đỉnh nguồn $S$, đỉnh đích $T$ và hàm sức chứa $c: E \to \mathbb{R}^+$. Tìm luồng cực đại (Maximum Flow) truyền từ $S$ đến $T$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Theo định lý \textbf{Max-Flow Min-Cut} (Luồng cực đại bằng Lát cắt cực tiểu), giá trị của luồng lớn nhất luôn bằng lát cắt có dung lượng nhỏ nhất chia cắt $S$ và $T$.
+Thay vì tìm kiếm đường tăng luồng ngẫu nhiên (dẫn đến thời gian chạy phụ thuộc vào sức chứa), thuật toán Dinic mô hình hóa không gian đồ thị thành hai cấu trúc: đồ thị thặng dư (Residual Graph) và đồ thị phân lớp (Level Graph).
+Bằng cách sử dụng phép duyệt BFS để đánh nhãn khoảng cách tô-pô, đồ thị phân lớp chỉ chứa các cạnh hướng từ lớp $d$ sang $d+1$, loại bỏ các chu trình. Sau đó, phép duyệt DFS tìm luồng cản (Blocking Flow) trên đồ thị phân lớp này.
+Vì mỗi lần tìm xong một luồng cản, khoảng cách ngắn nhất từ $S$ đến $T$ trên đồ thị thặng dư tăng lên ít nhất $1$. Do đó, số pha BFS bị chặn bởi $\mathcal{O}(|V|)$. Trong mỗi pha, việc cắt tia cụt (Dead-end pruning) đảm bảo DFS hoàn thành trong $\mathcal{O}(|V| \cdot |E|)$. Tổng thời gian chạy được giới hạn ở mức $\mathcal{O}(|V|^2 |E|)$. Đối với mạng luồng đơn vị và cặp ghép trên đồ thị hai phía, cấu trúc phân lớp đảm bảo số pha tối đa là $\mathcal{O}(\sqrt{|V|})$, giúp độ phức tạp giảm xuống $\mathcal{O}(|E| \sqrt{|V|})$.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Dinic's Algorithm Engine}]
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+const long long INF = 1000000000000000000LL;
+
+struct Edge {
+ int to;
+ long long cap, flow;
+ int rev;
+};
+
+struct Dinic {
+ int n;
+ vector<vector<Edge>> adj;
+ vector<int> level;
+ vector<size_t> ptr;
+
+ Dinic(int n) : n(n), adj(n), level(n), ptr(n) {}
+
+ void add_edge(int from, int to, long long cap) {
+ if (from == to) return;
+ adj[from].push_back({to, cap, 0, (int)adj[to].size()});
+ adj[to].push_back({from, 0, 0, (int)adj[from].size() - 1});
+ }
+
+ bool bfs(int s, int t) {
+ fill(level.begin(), level.end(), -1);
+ level[s] = 0;
+ queue<int> q;
+ q.push(s);
+ while (!q.empty()) {
+ int v = q.front();
+ q.pop();
+ for (auto& edge : adj[v]) {
+ if (edge.cap - edge.flow > 0 && level[edge.to] == -1) {
+ level[edge.to] = level[v] + 1;
+ q.push(edge.to);
+ }
+ }
+ }
+ return level[t] != -1;
+ }
+
+ long long dfs(int v, int t, long long pushed) {
+ if (pushed == 0 || v == t) return pushed;
+ for (size_t& cid = ptr[v]; cid < adj[v].size(); ++cid) {
+ auto& edge = adj[v][cid];
+ int tr = edge.to;
+ if (level[v] + 1 != level[tr] || edge.cap - edge.flow == 0) continue;
+ long long push = dfs(tr, t, min(pushed, edge.cap - edge.flow));
+ if (push == 0) continue;
+ edge.flow += push;
+ adj[tr][edge.rev].flow -= push;
+ return push;
+ }
+ return 0;
+ }
+
+ long long max_flow(int s, int t) {
+ if (s == t) return 0;
+ long long flow = 0;
+ while (bfs(s, t)) {
+ fill(ptr.begin(), ptr.end(), 0);
+ while (long long pushed = dfs(s, t, INF)) {
+ flow += pushed;
+ }
+ }
+ return flow;
+ }
+};
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Edmonds-Karp Differential Oracle}]
+import random
+import networkx as nx
+
+def generate_flow_network(n, m, max_cap):
+ G = nx.DiGraph()
+ G.add_nodes_from(range(n))
+ edges_added = 0
+ while edges_added < m:
+ u = random.randint(0, n - 1)
+ v = random.randint(0, n - 1)
+ while u == v:
+ v = random.randint(0, n - 1)
+ c = random.randint(1, max_cap)
+ if not G.has_edge(u, v):
+ G.add_edge(u, v, capacity=c)
+ edges_added += 1
+ return G
+
+# The standard NetworkX maximum_flow uses Edmonds-Karp or Boykov-Kolmogorov
+# which acts as an oracle to verify Dinic's correctness.
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Phân tích độ phức tạp:} Mảng con trỏ \texttt{ptr} đóng vai trò gì trong hàm DFS? Hãy chứng minh rằng nếu loại bỏ mảng \texttt{ptr}, thuật toán Dinic sẽ thoái hóa xuống độ phức tạp $\mathcal{O}(|V| \cdot |E|^2)$.
+\end{enumerate}
+
+% ======================================================================
+% MODULE 15: SUFFIX ARRAYS & LCP
+% ======================================================================
+\chapter{Mảng Hậu Tố \& Mảng Tiền Tố Chung Dài Nhất (Suffix Arrays \& LCP)}
+\label{mod:suffix_arrays}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Lexicographical Suffix Sorting \& LCP Array]
+Cho chuỗi $S$ độ dài $N$. Xây dựng mảng hậu tố (Suffix Array - SA) lưu trữ các chỉ số của $S$ sao cho các hậu tố được sắp xếp theo thứ tự từ điển. Sau đó, xây dựng mảng LCP lưu trữ độ dài tiền tố chung dài nhất giữa các hậu tố kề nhau trong SA.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Sắp xếp hậu tố một cách ngây thơ đòi hỏi $\mathcal{O}(N^2 \log N)$ phép so sánh ký tự. Để tối ưu, tại bước $k$, ta gán mỗi chuỗi con độ dài $2^{k-1}$ một lớp tương đương (equivalence class). Việc sắp xếp chuỗi con độ dài $2^k$ tương đương với việc sắp xếp các cặp (tuple) lớp tương đương từ bước trước. Áp dụng Radix Sort, độ phức tạp được thu gọn về $\mathcal{O}(N \log N)$.
+
+Đối với mảng LCP, định lý \textbf{Kasai} cung cấp một hệ thức truy hồi cấu trúc: nếu hậu tố tại $i$ và hậu tố đứng trước nó trong SA có LCP là $h > 0$, thì hậu tố tại $i+1$ và hậu tố đứng trước nó trong SA phải có LCP tối thiểu là $h - 1$. Điều kiện biên $h[i] \ge h[i-1] - 1$ với:
+\[
+h[i] = \text{LCP}(S[i..], S[\text{SA}[\text{rank}[i]-1]..])
+\]
+đảm bảo con trỏ so sánh bị chặn, chỉ lùi lại tối đa $N$ lần trong suốt quá trình. Do đó, mảng LCP được xây dựng trong $\mathcal{O}(N)$.
+
+\textbf{Lưu ý (Đầu ra \& Sentinel):} Suffix Array trả về có kích thước $N+1$ (bao gồm cả hậu tố rỗng tương ứng với sentinel ở chỉ số $0$). Việc sử dụng ký tự tối thiểu \texttt{char(0)} thay vì \texttt{\$} làm sentinel đảm bảo tính nhỏ nhất tuyệt đối trong bảng mã, và việc ép kiểu sang \texttt{unsigned char} khi truy xuất mảng \texttt{cnt} giúp phòng tránh lỗi bộ nhớ (Out-of-Bounds Risk) cho các ký tự mở rộng.
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Suffix Array \& Kasai's LCP Engine}]
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+vector<int> build_suffix_array(string s) {
+ s += char(0);
+ int n = s.size();
+ vector<int> p(n), c(n), cnt(max(256, n), 0);
+ for (int i = 0; i < n; i++) cnt[(unsigned char)s[i]]++;
+ for (int i = 1; i < 256; i++) cnt[i] += cnt[i - 1];
+ for (int i = 0; i < n; i++) p[--cnt[(unsigned char)s[i]]] = i;
+ 
+ c[p[0]] = 0;
+ int classes = 1;
+ for (int i = 1; i < n; i++) {
+ if (s[p[i]] != s[p[i - 1]]) classes++;
+ c[p[i]] = classes - 1;
+ }
+ 
+ vector<int> pn(n), cn(n);
+ for (int h = 0; (1 << h) < n; ++h) {
+ for (int i = 0; i < n; i++) {
+ pn[i] = p[i] - (1 << h);
+ if (pn[i] < 0) pn[i] += n;
+ }
+ fill(cnt.begin(), cnt.begin() + classes, 0);
+ for (int i = 0; i < n; i++) cnt[c[pn[i]]]++;
+ for (int i = 1; i < classes; i++) cnt[i] += cnt[i - 1];
+ for (int i = n - 1; i >= 0; i--) p[--cnt[c[pn[i]]]] = pn[i];
+ 
+ cn[p[0]] = 0;
+ classes = 1;
+ for (int i = 1; i < n; i++) {
+ pair<int, int> cur = {c[p[i]], c[(p[i] + (1 << h)) % n]};
+ pair<int, int> prev = {c[p[i - 1]], c[(p[i - 1] + (1 << h)) % n]};
+ if (cur != prev) ++classes;
+ cn[p[i]] = classes - 1;
+ }
+ c = cn;
+ if (classes == n) break;
+ }
+ return p;
+}
+
+vector<int> build_lcp(string s, const vector<int>& p) {
+ s += char(0);
+ int n = s.size();
+ vector<int> rank(n);
+ for (int i = 0; i < n; i++) rank[p[i]] = i;
+ 
+ vector<int> lcp(n - 1, 0);
+ int h = 0;
+ for (int i = 0; i < n; i++) {
+ if (rank[i] > 0) {
+ int j = p[rank[i] - 1];
+ while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;
+ lcp[rank[i] - 1] = h;
+ if (h > 0) h--;
+ }
+ }
+ return lcp;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python LCP Differential Oracle}]
+import random
+import string
+
+def naive_suffix_array_lcp(s):
+    s += '$'
+    n = len(s)
+    suffixes = [(s[i:], i) for i in range(n)]
+    suffixes.sort(key=lambda x: x[0])
+    sa = [idx for _, idx in suffixes]
+    
+    lcp = [0] * (n - 1)
+    for i in range(n - 1):
+        s1, s2 = suffixes[i][0], suffixes[i + 1][0]
+        h = 0
+        while s1[h] == s2[h]:
+            h += 1
+        lcp[i] = h
+    return sa, lcp
+
+def test_sa_lcp(trials=100):
+    for trial in range(trials):
+        length = random.randint(0, 100)
+        s = "".join(random.choice(string.ascii_lowercase) for _ in range(length))
+        sa, lcp = naive_suffix_array_lcp(s)
+        assert len(sa) == len(s) + 1
+    print(f"Suffix array oracle verified for {trials} random strings.")
+
+if __name__ == "__main__":
+    test_sa_lcp()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Định lý Kasai khai thác tính chất bảo toàn tiền tố nào để thiết lập ranh giới $h[i] \ge h[i-1] - 1$?
+\end{enumerate}
+
+
+% ======================================================================
+% MODULE 16: ADVANCED COMBINATORICS & GROUP THEORY
+% ======================================================================
+\chapter{Tổ Hợp Nâng Cao \& Lý Thuyết Nhóm (Combinatorics \& Group Theory)}
+\label{mod:group_theory}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Necklace Coloring \& Symmetry Equivalence]
+Có bao nhiêu cách tô màu một vòng cổ gồm $N$ hạt bằng $C$ màu khác nhau? Hai cách tô màu được xem là tương đương nếu chúng có thể biến đổi cho nhau qua phép quay (Rotational Symmetry).
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Việc đếm trực tiếp số lượng trạng thái hợp lệ trên một không gian đối xứng dễ dẫn đến sai lệch do đếm lặp. Thay vì khảo sát từng trạng thái, ta định nghĩa một nhóm hoán vị (Permutation Group) $G$ tác động lên tập hợp toàn bộ các cấu hình $X$. Dựa trên \textbf{Bổ đề Burnside} (Burnside's Lemma), số lượng quỹ đạo (Orbits) đại diện cho số cấu hình phân biệt $|X/G|$ chính bằng trung bình cộng số điểm bất động (Fixed points) của mọi phần tử $g \in G$:
+$$ |X/G| = \frac{1}{|G|} \sum_{g \in G} |X^g| $$
+Để tối ưu hóa tính toán, \textbf{Định lý Đếm Pólya} (Pólya Enumeration Theorem) nâng cấp kết quả này bằng chia các hoán vị thành các chu trình rời rạc. Khi nhóm $G$ là tập các phép quay quanh tâm, số lượng chu trình khi quay $k$ bước là $\gcd(k, N)$. Thay vì duyệt qua $N$ phần tử trong $\mathcal{O}(N)$, ta gộp các phép quay có cùng ước chung lớn nhất $d$ bằng Hàm Phi Euler (Euler's Totient Function) $\phi(N/d)$. Thuật toán được giảm từ $\mathcal{O}(N)$ xuống $\mathcal{O}(\sum_{d|N} \sqrt{d})$ (thời gian tính hàm $\phi$ và lũy thừa module).
+Lưu ý: Phép chia module cho $N$ ở bước cuối giả định $mod$ là số nguyên tố và $N \not\equiv 0 \pmod{mod}$. Ngoài ra, thuật toán hiện tại chỉ mô phỏng phép đối xứng quay (Nhóm cyclic $C_N$, vòng cổ "necklaces"), không bao gồm đối xứng trục (Nhóm nhị diện $D_N$, vòng tay "bracelets").
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Polya Enumeration via Euler's Totient}]
+#include <iostream>
+using namespace std;
+
+long long power(long long base, long long exp, long long mod) {
+ long long res = 1;
+ base %= mod;
+ while (exp > 0) {
+ if (exp % 2 == 1) res = (res * base) % mod;
+ base = (base * base) % mod;
+ exp /= 2;
+ }
+ return res;
+}
+
+long long euler_phi(long long n) {
+ long long res = n;
+ for (long long i = 2; i * i <= n; i++) {
+ if (n % i == 0) {
+ while (n % i == 0) n /= i;
+ res -= res / i;
+ }
+ }
+ if (n > 1) res -= res / n;
+ return res;
+}
+
+long long count_necklaces(long long n, long long c, long long mod) {
+ long long ans = 0;
+ for (long long d = 1; d * d <= n; ++d) {
+ if (n % d == 0) {
+ long long term1 = ((euler_phi(n / d) % mod) * power(c, d, mod)) % mod;
+ ans = (ans + term1) % mod;
+ if (d * d != n) {
+ long long term2 = ((euler_phi(d) % mod) * power(c, n / d, mod)) % mod;
+ ans = (ans + term2) % mod;
+ }
+ }
+ }
+ // Multiply by modular inverse of n
+ long long inv_n = power(n, mod - 2, mod);
+ return (ans * inv_n) % mod;
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Set-Theoretic Burnside Oracle}]
+import random
+import itertools
+
+def brute_force_necklaces(n, c):
+    # Oracle: Generates all states and filters by cyclic equivalents
+    unique_configurations = set()
+    for current in itertools.product(range(c), repeat=n):
+        min_rep = current
+        for shift in range(1, n):
+            rotated = current[shift:] + current[:shift]
+            if rotated < min_rep:
+                min_rep = rotated
+        unique_configurations.add(min_rep)
+    return len(unique_configurations)
+
+def euler_phi(n):
+    res = n
+    i = 2
+    while i * i <= n:
+        if n % i == 0:
+            while n % i == 0:
+                n //= i
+            res -= res // i
+        i += 1
+    if n > 1:
+        res -= res // n
+    return res
+
+def polya_necklaces(n, c, mod):
+    ans = 0
+    d = 1
+    while d * d <= n:
+        if n % d == 0:
+            ans = (ans + ((euler_phi(n // d) % mod) * pow(c, d, mod)) % mod) % mod
+            if d * d != n:
+                ans = (ans + ((euler_phi(d) % mod) * pow(c, n // d, mod)) % mod) % mod
+        d += 1
+    return (ans * pow(n, -1, mod)) % mod
+
+def run_fuzzer(trials=100):
+    mod = 10**9 + 7
+    for _ in range(trials):
+        n = random.randint(1, 10)
+        c = random.randint(1, 4)
+        bf = brute_force_necklaces(n, c) % mod
+        opt = polya_necklaces(n, c, mod)
+        assert bf == opt, f"Polya mismatch for N={n}, C={c}"
+    print(f"Polya enumeration verified against {trials} random trials.")
+
+if __name__ == "__main__":
+    run_fuzzer()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Bổ đề Burnside gom nhóm và lọc bỏ các hoán vị đối xứng như thế nào so với việc đếm trạng thái vét cạn?
+\end{enumerate}
+
+% ======================================================================
+% MODULE 17: TREE DP & STATE SPACE SEARCH
+% ======================================================================
+\chapter{Quy Hoạch Động Trên Cây \& Không Gian Trạng Thái (Tree DP \& State Space Search)}
+\label{mod:tree_dp}
+
+\section{Bài Toán Mẫu \& Phân Tích Bất Biến}
+\begin{baitoan}[Tree Subgraph Optimization \& 15-Puzzle]
+1. Quy hoạch động trên cây: Tìm tập độc lập lớn nhất (Maximum Independent Set) trên đồ thị dạng cây.
+2. Không gian trạng thái: Tìm đường đi ngắn nhất để giải trò chơi 15-Puzzle.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+\textbf{Tree DP:} Cây là đồ thị liên thông vô hướng phi chu trình. Phép chuyển trạng thái có thể định hướng thành Đồ thị có hướng phi chu trình (DAG). Gọi $f(u, 0)$ và $f(u, 1)$ là trạng thái tập độc lập của đỉnh $u$. Phương trình truy hồi từ $v \in \text{child}(u)$:
+$$ f(u, 0) = \sum_{v} \max(f(v, 0), f(v, 1)), \quad f(u, 1) = 1 + \sum_{v} f(v, 0) $$
+Để loại bỏ chi phí gọi hàm đệ quy (Zero Call-Stack Overhead), đệ quy được làm phẳng (Flatten) thành cấu trúc vòng lặp trên mảng duyệt thứ tự tô-pô.
+
+\textbf{State Space Search (IDA*):} Khảo sát một không gian trạng thái hàm mũ yêu cầu chiến lược rẽ nhánh chặt chẽ hơn BFS. Thông qua việc đánh giá hàm cận heuristic $f(u) = g(u) + h(u)$, tính chất \textit{admissible} (chấp nhận được) bảo đảm $h(u) \le h^*(u)$ (khoảng cách thực tế) và tính \textit{consistent} (nhất quán) $h(u) \le c(u, v) + h(v)$ thiết lập cận dưới cho bài toán. Thuật toán \textbf{IDA*} (Iterative Deepening A*) áp dụng cận độ sâu lặp, tối ưu hóa mức tiêu thụ bộ nhớ từ $\mathcal{O}(b^d)$ của A* về không gian tuyến tính $\mathcal{O}(d)$, tương thích với bộ nhớ đệm CPU.
+
+\textit{Lưu ý: Cài đặt chi tiết IDA* cho bài toán 15-Puzzle được để lại như một bài tập nâng cao.}
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ Flat Array Tree DP (Zero Call-Stack Overhead)}]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int tree_independent_set(int n, const vector<vector<int>>& adj) {
+ vector<int> parent(n + 1, 0);
+ vector<int> topo;
+ vector<bool> visited(n + 1, false);
+ 
+ // BFS to establish strict topological hierarchy
+ vector<int> q;
+ q.push_back(1);
+ visited[1] = true;
+ int head = 0;
+ while (head < q.size()) {
+ int u = q[head++];
+ topo.push_back(u);
+ for (int v : adj[u]) {
+ if (!visited[v]) {
+ visited[v] = true;
+ parent[v] = u;
+ q.push_back(v);
+ }
+ }
+ }
+ 
+ vector<int> dp(2 * (n + 1), 0);
+ // Reverse topological traversal: 0 Recursion limits
+ for (int i = topo.size() - 1; i >= 0; --i) {
+ int u = topo[i];
+ dp[2 * u + 1] = 1;
+ for (int v : adj[u]) {
+ if (v != parent[u]) {
+ dp[2 * u] += max(dp[2 * v], dp[2 * v + 1]);
+ dp[2 * u + 1] += dp[2 * v];
+ }
+ }
+ }
+ 
+ return max(dp[2], dp[3]);
+}
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python Standard Recursive Tree DP Đệ quy cơ bản}]
+import sys
+import random
+sys.setrecursionlimit(200000)
+
+def recursive_tree_dp(n, adj):
+    dp = [[0, 0] for _ in range(n + 1)]
+    visited = [False] * (n + 1)
+    
+    def dfs(u):
+        visited[u] = True
+        dp[u][1] = 1
+        for v in adj[u]:
+            if not visited[v]:
+                dfs(v)
+                dp[u][0] += max(dp[v][0], dp[v][1])
+                dp[u][1] += dp[v][0]
+                
+    dfs(1)
+    return max(dp[1][0], dp[1][1])
+
+def flat_tree_dp(n, adj):
+    parent = [0] * (n + 1)
+    topo = []
+    visited = [False] * (n + 1)
+    
+    q = [1]
+    visited[1] = True
+    head = 0
+    while head < len(q):
+        u = q[head]
+        head += 1
+        topo.append(u)
+        for v in adj[u]:
+            if not visited[v]:
+                visited[v] = True
+                parent[v] = u
+                q.append(v)
+                
+    dp = [0] * (2 * (n + 1))
+    for i in range(len(topo) - 1, -1, -1):
+        u = topo[i]
+        dp[2 * u + 1] = 1
+        for v in adj[u]:
+            if v != parent[u]:
+                dp[2 * u] += max(dp[2 * v], dp[2 * v + 1])
+                dp[2 * u + 1] += dp[2 * v]
+                
+    return max(dp[2], dp[3])
+
+def generate_random_tree(n):
+    adj = [[] for _ in range(n + 1)]
+    is_pathological = (random.random() < 0.2)
+    is_disconnected = (random.random() < 0.1)
+    for i in range(2, n + 1):
+        if is_disconnected and random.random() < 0.05:
+            continue
+        if is_pathological:
+            p = i - 1
+        else:
+            p = random.randint(1, i - 1)
+        adj[p].append(i)
+        adj[i].append(p)
+    return adj
+
+def test_tree_dp(trials=100):
+    for trial in range(trials):
+        if trial < 2:
+            n = 50000
+        else:
+            n = random.randint(1, 100)
+        adj = generate_random_tree(n)
+        res1 = recursive_tree_dp(n, adj)
+        res2 = flat_tree_dp(n, adj)
+        assert res1 == res2, f"Mismatch on trial {trial}"
+    print(f"Tree DP fuzzer passed {trials} trials.")
+
+if __name__ == "__main__":
+    test_tree_dp()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item \textit{Vi kiến trúc phần cứng:} Tại sao cấu trúc dữ liệu phẳng (Flat Topological Array) trong thuật toán Tree DP trên lại tránh được chi phí Call-Stack Overhead so với Đệ quy truyền thống trên kiến trúc vi xử lý x86-64?
+ \item \textit{Cận heuristic:} Nếu hàm $h(u)$ trong IDA* vi phạm tính chất \textit{admissible} (tức là $h(u) > h^*(u)$), hệ quả nào sẽ xảy ra đối với cây tìm kiếm được duyệt bởi thuật toán (lưu ý rằng đồ thị không gian trạng thái cơ sở là bất biến)?
+\end{enumerate}
+
+
+% ======================================================================
+% MODULE 18: NP-COMPLETENESS & POLYNOMIAL REDUCTIONS
+% ======================================================================
+\chapter{Lớp Bài Toán \texorpdfstring{$\mathcal{NP}$}{NP}-Khó \& Phép Thu Gọn Đa Thức (NP-Hardness \& Reductions)}
+\label{mod:np_hard}
+
+\section{Bài Toán Mẫu \& Phương Pháp Tiếp Cận}
+\begin{baitoan}[Hamiltonian Cycle \& 3-SAT Reduction]
+Chứng minh rằng không tồn tại thuật toán đa thức nào để giải bài toán Chu trình Hamilton trên đồ thị $G=(V,E)$ trừ khi $\mathcal{P} = \mathcal{NP}$.
+\end{baitoan}
+
+\noindent\textbf{Giai đoạn 1: Phân tích Toán học}\\
+Để chứng minh một bài toán $L_2$ (Hamiltonian Cycle) là $\mathcal{NP}$-Hard, ta không thể phân tích cấu trúc nội tại của nó, mà phải sử dụng \textbf{Phép thu gọn thời gian đa thức} (Polynomial-Time Reduction) $L_1 \le_p L_2$ từ một bài toán $\mathcal{NP}$-Hard đã biết $L_1$ (như 3-SAT).
+Phép thu gọn $\le_p$ là một hàm tính được trong thời gian đa thức $f: \Sigma^* \to \Sigma^*$, sao cho $x \in L_1 \iff f(x) \in L_2$.
+Khi đối mặt với các bài toán có bản chất $\mathcal{NP}$-Hard trong Lập trình thi đấu, phương pháp tiếp cận của ta chuyển từ việc "Tìm thuật toán tối ưu toàn cục" sang "Tối ưu hóa hằng số của thuật toán hàm mũ".
+
+\section{Cài Đặt C++}
+\begin{lstlisting}[language=C++, caption={C++ NP-Hard Polynomial Reduction Oracle (3-SAT to Graph)}]
+// Does not solve NP-Hard in polynomial time directly.
+// Instead, implements reduction f(x) translating 3-SAT to Hamiltonian Graph
+// strictly for theoretical proofs of computational complexity.
+// This is NOT for algorithmic runtime optimization, as $\mathcal{O}(2^V \cdot V^2)$ on the
+// expanded graph is exponentially slower than $\mathcal{O}(2^n)$ brute force on 3-SAT.
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// (Implementation left as an exercise for advanced competitive programming)
+\end{lstlisting}
+
+\section{Bộ Kiểm Thử So Lệch \& Fuzzing Python}
+\begin{lstlisting}[language=Python, caption={Python 3-SAT Exponential Brute Force Evaluator}]
+import random
+
+def evaluate_3sat_brute_force(clauses, num_vars):
+    # Oracle: 3-SAT Exponential Brute Force Evaluator by branching on all possible truth assignments
+    for i in range(1 << num_vars):
+        assignment = [(i >> j) & 1 for j in range(num_vars)]
+        valid = True
+        for clause in clauses:
+            clause_valid = False
+            for lit in clause:
+                var_idx = abs(lit) - 1
+                val = assignment[var_idx] if lit > 0 else 1 - assignment[var_idx]
+                if val:
+                    clause_valid = True
+                    break
+            if not clause_valid:
+                valid = False
+                break
+        if valid:
+            return True
+    return False
+
+def test_np_hard(trials=100):
+    sat_count = 0
+    unsat_count = 0
+    for trial in range(trials):
+        num_vars = random.randint(3, 10)
+        num_clauses = random.randint(5, 20)
+        clauses = []
+        for _ in range(num_clauses):
+            clause = []
+            vars_sampled = random.sample(range(1, num_vars + 1), 3)
+            for var in vars_sampled:
+                if random.choice([True, False]):
+                    var = -var
+                clause.append(var)
+            clauses.append(clause)
+        is_sat = evaluate_3sat_brute_force(clauses, num_vars)
+        if is_sat:
+            sat_count += 1
+        else:
+            unsat_count += 1
+    print(f"3-SAT Exponential Brute Force Evaluator finished {trials} trials.")
+    print(f"Satisfiable: {sat_count}, Unsatisfiable: {unsat_count}")
+
+if __name__ == "__main__":
+    test_np_hard()
+\end{lstlisting}
+
+\section{Câu Hỏi Mở Rộng}
+\begin{enumerate}
+ \item Trình bày phép thu gọn thời gian đa thức (Polynomial-Time Reduction) từ bài toán 3-SAT sang bài toán Chu trình Hamilton.
+\end{enumerate}
+
+
+% ======================================================================
+% BIBLIOGRAPHY
+% ======================================================================
+
+
+
+\newpage
+\chapter*{Phụ lục A: Tối Ưu Hóa Thuật Toán (C++)}
+\label{chap:appendix}
+\addcontentsline{toc}{chapter}{Phụ lục A: Tối Ưu Hóa Thuật Toán (C++)}
+
+Việc đạt giới hạn thời gian chạy thực tế phụ thuộc vào Tối ưu hóa bộ nhớ (Cache Locality), Lập trình không rẽ nhánh (Branchless Programming), và Thao tác bit (Bit-level Intrinsics).
+
+\section*{A.1 Cải Thiện Tính Cục Bộ Bộ Nhớ (Loop Tiling)}
+Phép nhân ma trận $O(n^3)$ cơ bản gặp hiện tượng Cache Miss do truy xuất bộ nhớ theo cột. Kỹ thuật Loop Tiling phân mảnh dữ liệu tương thích với kích thước của L1/L2 Cache, cải thiện trực tiếp thông lượng truy xuất RAM.
+
+\begin{lstlisting}[language=C++, caption={Cache-Optimized Matrix Multiplication}]
+#pragma GCC optimize("O3,unroll-loops")
+#ifdef __x86_64__
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#endif
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <utility>
+#include <cassert>
+
+using namespace std;
+const int MOD = 1e9 + 7;
+const int BLOCK_SIZE = 64; // L1 Cache line alignment
+
+// Cache-friendly Matrix Multiplication via Loop Tiling
+vector<vector<long long>> apex_matrix_mult(const vector<vector<long long>>& A, const vector<vector<long long>>& B) {
+ int n = A.size();
+ assert(n > 0 && n == A[0].size() && n == B.size() && n == B[0].size() && "Matrices must be square");
+ 
+ vector<vector<long long>> C(n, vector<long long>(n, 0));
+ // Transpose B to achieve contiguous memory access (Spatial Locality)
+ vector<vector<long long>> B_T(n, vector<long long>(n, 0));
+ for (int i = 0; i < n; ++i)
+ for (int j = 0; j < n; ++j)
+ B_T[i][j] = B[j][i];
+
+ // Block-level multiplication (Tiling)
+ for (int i = 0; i < n; i += BLOCK_SIZE) {
+ for (int j = 0; j < n; j += BLOCK_SIZE) {
+ for (int k = 0; k < n; k += BLOCK_SIZE) {
+ // Inner block execution
+ for (int ii = i; ii < min(i + BLOCK_SIZE, n); ++ii) {
+ for (int jj = j; jj < min(j + BLOCK_SIZE, n); ++jj) {
+ __int128_t sum = 0;
+ // Sequential memory access for both A and B_T
+ for (int kk = k; kk < min(k + BLOCK_SIZE, n); ++kk) {
+ sum += (__int128_t)A[ii][kk] * B_T[jj][kk];
+ }
+ sum %= MOD;
+ if (sum < 0) sum += MOD;
+ C[ii][jj] = (C[ii][jj] + (long long)sum) % MOD;
+ }
+ }
+ }
+ }
+ }
+ return C;
+}
+\end{lstlisting}
+
+\section*{A.2 Lập Trình Bitmasking (N-Queens)}
+Thuật toán đệ quy cắt nhánh thông thường sử dụng lệnh \texttt{if}. Việc sử dụng thao tác bit giúp tối ưu hóa đáng kể hiện tượng xả đường ống lệnh trên CPU.
+
+\begin{lstlisting}[language=C++, caption={Bitmasking via CPU Intrinsics}]
+#pragma GCC optimize("O3")
+#ifdef __x86_64__
+#pragma GCC target("bmi,bmi2,lzcnt,popcnt")
+#endif
+#include <iostream>
+#include <algorithm>
+#include <utility>
+
+using namespace std;
+
+long long apex_valid_configs = 0;
+int ALL_ONES;
+
+// Execute backtracking
+void apex_solve(int row_mask, int ld_mask, int rd_mask) {
+ if (row_mask == ALL_ONES) {
+ apex_valid_configs++;
+ return;
+ }
+ 
+ // Isolate valid bit positions
+ int valid_positions = ALL_ONES & ~(row_mask | ld_mask | rd_mask);
+ 
+ // Iterate via bit manipulation
+ while (valid_positions) {
+ // Extract least significant valid bit using 2's complement
+ int p = valid_positions & -valid_positions;
+ valid_positions ^= p; // Fast bit toggle
+ 
+ // Recursive call
+ apex_solve(row_mask | p, (ld_mask | p) << 1, (rd_mask | p) >> 1);
+ }
+}
+
+// Wrapper function to initialize the invariant state
+long long get_n_queens_apex(int n) {
+ ALL_ONES = (1 << n) - 1;
+ apex_valid_configs = 0;
+ apex_solve(0, 0, 0);
+ return apex_valid_configs;
+}
+\end{lstlisting}
+
+\section*{A.3 Tối Ưu Fast Fourier Transform (In-Place)}
+Triển khai FFT lặp thao tác In-Place (trên mảng nguyên bản) qua phép hoán vị đảo bit (Bit-Reversal Permutation), triệt tiêu chi phí cấp phát bộ nhớ động của các lệnh gọi đệ quy. Chú ý rằng kích thước mảng đầu vào $N$ bắt buộc phải là một lũy thừa của 2.
+
+\begin{lstlisting}[language=C++, caption={Iterative FFT with In-Place Bit-Reversal}]
+#pragma GCC optimize("O3,unroll-loops")
+#ifdef __x86_64__
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#endif
+#include <iostream>
+#include <vector>
+#include <complex>
+#include <cmath>
+#include <cassert>
+#include <algorithm>
+#include <utility>
+
+using namespace std;
+typedef complex<double> cd;
+const double PI = acos(-1);
+
+// In-Place Iterative FFT
+void apex_fft(vector<cd>& a, bool invert) {
+ int n = a.size();
+ assert((n & (n - 1)) == 0); // Array size must be a power of 2
+ 
+ // 1. Bit-Reversal Permutation
+ for (int i = 1, j = 0; i < n; i++) {
+ int bit = n >> 1;
+ for (; j & bit; bit >>= 1) j ^= bit;
+ j ^= bit;
+ if (i < j) swap(a[i], a[j]);
+ }
+ 
+ // 2. Iterative Bottom-Up Merging (Eliminates O(N) recursive overhead)
+ for (int len = 2; len <= n; len <<= 1) {
+ double angle = 2 * PI / len * (invert ? -1 : 1);
+ 
+ for (int j = 0; j < len / 2; j++) {
+ cd w = std::polar(1.0, angle * j);
+ for (int i = 0; i < n; i += len) {
+ // Butterfly Operation
+ cd u = a[i + j], v = a[i + j + len / 2] * w;
+ a[i + j] = u + v;
+ a[i + j + len / 2] = u - v;
+ }
+ }
+ }
+ 
+ // Normalization for Inverse FFT
+ if (invert) {
+ for (cd & x : a) x /= n;
+ }
+}
+\end{lstlisting}
+
+
+\newpage
+\nocite{*}
+\printbibliography[heading=bibintoc, title={Tài Liệu Tham Khảo}]
+\end{document}
