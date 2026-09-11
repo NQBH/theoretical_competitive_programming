@@ -1,0 +1,880 @@
+\documentclass[11pt, letterpaper]{article}
+\usepackage[utf8]{vietnam}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\makeatletter\@namedef{csq@sfcodes@T5}{}\makeatother
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=10]{biblatex}
+\IfFileExists{../bib.bib}{%
+  \addbibresource{../bib.bib}%
+}{%
+  \addbibresource{bib.bib}%
+}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\usepackage{xr-hyper}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\IfFileExists{../manuscript/manuscript.aux}{%
+  \externaldocument{../manuscript/manuscript}%
+}{%
+  \externaldocument{manuscript/manuscript}%
+}
+
+\usepackage{algorithm,algpseudocode,amsmath,amssymb,amsthm,float,graphicx,mathtools,tikz}
+\usetikzlibrary{arrows}
+\allowdisplaybreaks
+
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{problem}{Problem}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{remark}{Remark}[section]
+
+\usepackage[margin=2cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+\lstset{style=mystyle}
+
+\title{Supplementary Material: Mathematical Proofs, Intermediate Algebraic Derivations, and Invariant Verification for Theoretical Competitive Programming}
+\author{Nguyễn Quản Bá Hồng \\
+\small Department of Artificial Intelligence \& Data Science \\
+\small University of Management and Technology (UMT), Ho Chi Minh City}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This supplementary document provides complete mathematical proofs, intermediate algebraic manipulations, change-of-variable derivations, and asymptotic inequality proofs omitted from the main manuscript \cite{tao2026mathai,tao2006solving}. Utilizing the \texttt{xr-hyper} cross-referencing interface, every theorem, proposition, and bound derived herein links directly to the formalizations presented in the main text. We detail the order-theoretic minimax dualities of Dilworth and Mirsky, external-memory I/O scanning bounds, the multi-dimensional Fast Zeta Transform recurrence, exact sample complexity bounds for differential testing, union-by-size tree height bounds in Rollback Disjoint-Set Union (DSU), Dinic's network flow complexity on unit networks, Kasai's linear-time LCP array construction invariant, and the double-counting foundations of Burnside's Lemma and Pólya enumeration.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction and global notational convention}
+This supplementary material accompanies the primary manuscript \emph{Theoretical Competitive Programming (TCP): A Tripartite Pedagogical Framework Integrating Formal Mathematics, Hardware-Aware C++, and Differential Testing}. Across both documents, for any non-negative integer $n \in \mathbb{Z}_{\ge 0}$ (as well as input size $N \in \mathbb{Z}_{\ge 1}$), we enforce the canonical index set notation:
+\begin{equation}
+    [n] \coloneqq \{1, \dots, n\} \quad \text{and} \quad [n]_0 \coloneqq [n] \cup \{0\} = \{0, 1, \dots, n\},
+\end{equation}
+with the standard boundary convention $[0] \coloneqq \emptyset$ and $[0]_0 \coloneqq \{0\}$.
+Throughout this document, cross-references directly point to labeled sections, definitions, and equations in the main manuscript (e.g., Section~\ref{sec:tripartite_protocol}, Section~\ref{sec:phase1_math}, Section~\ref{sec:phase2_cpp}, Section~\ref{sec:phase3_testing}, and Section~\ref{sec:curriculum}).
+
+\section{Phase 1: mathematical theory \& poset minimax dualities}
+In Section~\ref{sec:phase1_math} of the main manuscript, state-space partitions are formalized using Partially Ordered Sets (Posets) $(P, \le)$ and their minimax dualities, as well as Bachmann--Landau asymptotic calculus under the RAM model. Here we present the complete proofs and intermediate algebraic steps.
+
+\subsection{Proof of Dilworth's theorem (\texorpdfstring{Equation~\ref{eq:poset_duality}}{Eq. 1})}
+Let $(P, \le)$ be a finite poset with $|P| = N \in \mathbb{Z}_{\ge 1}$. 
+\begin{definition}
+A subset $A \subseteq P$ is an \emph{antichain} if for all distinct $x, y \in A$, neither $x \le y$ nor $y \le x$ (i.e., $x$ and $y$ are incomparable, denoted $x \parallel y$). The \emph{poset width} is defined as:
+\begin{equation}
+    \operatorname{width}(P) \coloneqq \max \{|A| : A \subseteq P \text{ is an antichain}\}.
+\end{equation}
+A subset $C \subseteq P$ is a \emph{chain} if for all $x, y \in C$, either $x \le y$ or $y \le x$. A \emph{chain cover} (or chain partition) of $P$ is a collection of disjoint chains $\mathcal{C} = \{C_i\}_{i \in [k]}$ such that $\bigcup_{i \in [k]} C_i = P$.
+\end{definition}
+
+\begin{theorem}[Dilworth's duality theorem, Eq.~(\ref{eq:poset_duality})]
+For any finite poset $(P, \le)$,
+\begin{equation}
+    \operatorname{width}(P) = \min \{|\mathcal{C}| : \mathcal{C} \text{ is a chain cover of } P\}.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The proof proceeds in two steps: weak duality and strong duality.
+
+\medskip\noindent\textbf{Step 1 (Weak Duality: $\operatorname{width}(P) \le \min |\mathcal{C}|$):}
+Let $A \subseteq P$ be an arbitrary antichain, and let $\mathcal{C} = \{C_i\}_{i \in [k]}$ be an arbitrary chain cover of $P$, where $|\mathcal{C}| = k$.
+By definition of a partition, the elements of $A$ can be decomposed across the chains:
+\begin{equation}
+    A = A \cap P = A \cap \left( \bigcup_{i \in [k]} C_i \right) = \bigcup_{i \in [k]} (A \cap C_i).
+\end{equation}
+Because the chains are mutually disjoint, the cardinality is additive:
+\begin{equation}
+    |A| = \sum_{i \in [k]} |A \cap C_i|.
+\end{equation}
+For any $i \in [k]$, suppose for contradiction that $|A \cap C_i| \ge 2$. Then there exist distinct elements $u, v \in A \cap C_i$. Because $u, v \in C_i$ and $C_i$ is a chain, $u$ and $v$ must be comparable ($u \le v$ or $v \le u$). However, because $u, v \in A$ and $A$ is an antichain, $u$ and $v$ must be incomparable ($u \parallel v$). This is a direct contradiction.
+Hence, for every $i \in [k]$, we must have:
+\begin{equation}
+    |A \cap C_i| \le 1.
+\end{equation}
+Summing this upper bound across all $k$ chains yields:
+\begin{equation}
+    |A| = \sum_{i \in [k]} |A \cap C_i| \le \sum_{i \in [k]} 1 = k = |\mathcal{C}|.
+\end{equation}
+Because this inequality holds for any antichain $A$ and any chain cover $\mathcal{C}$, we may take the supremum over all antichains and the infimum over all chain covers:
+\begin{equation}\label{eq:weak_dilworth}
+    \max_{A} |A| \le \min_{\mathcal{C}} |\mathcal{C}|.
+\end{equation}
+
+\medskip\noindent\textbf{Step 2 (Strong Duality: Construction via K\"{o}nig's Bipartite Matching):}
+To prove the reverse inequality $\min |\mathcal{C}| \le \max |A|$, we construct a bipartite graph $B = (V_L \cup V_R, E_B)$. 
+For each element $u \in P$, define two vertices $u_L \in V_L$ and $u_R \in V_R$, so that $|V_L| = |V_R| = |P| = N$. 
+Define the directed bipartite edge set:
+\begin{equation}
+    E_B \coloneqq \{(u_L, v_R) \in V_L \times V_R : u <_P v\}.
+\end{equation}
+Let $M \subseteq E_B$ be a matching in $B$. Notice that every edge $(u_L, v_R) \in M$ specifies a unique successor link $u \to v$ in $P$. Because $M$ is a matching:
+\begin{enumerate}
+    \item No vertex in $V_L$ has degree $> 1$ in $M$, meaning each element $u \in P$ has at most one immediate successor.
+    \item No vertex in $V_R$ has degree $> 1$ in $M$, meaning each element $v \in P$ has at most one immediate predecessor.
+\end{enumerate}
+Consequently, the set of directed edges in $M$ decomposes the poset elements into a collection of vertex-disjoint paths (chains). 
+Initially, before any edges are selected ($M = \emptyset$), every element forms its own chain, requiring $N$ chains. Each matched edge $(u_L, v_R) \in M$ concatenates two existing chains into one, reducing the number of required chains by $1$. 
+Therefore, any matching $M$ of cardinality $|M|$ induces a chain cover $\mathcal{C}_M$ of size:
+\begin{equation}
+    |\mathcal{C}_M| = N - |M|.
+\end{equation}
+To minimize the number of chains, we must maximize the size of the matching $|M|$. Let $M^*$ be a maximum matching in $B$. Then:
+\begin{equation}
+    \min |\mathcal{C}| \le |\mathcal{C}_{M^*}| = N - |M^*|.
+\end{equation}
+By König's Theorem, the maximum matching size in a bipartite graph equals the minimum vertex cover size:
+\begin{equation}
+    |M^*| = |K^*|,
+\end{equation}
+where $K^* = K_L \cup K_R$ ($K_L \subseteq V_L, K_R \subseteq V_R$) is a minimum vertex cover of $B$. 
+Since $K^*$ is a vertex cover, every edge in $E_B$ has at least one endpoint in $K^*$:
+\begin{equation}
+    \forall (u_L, v_R) \in E_B, \quad u_L \in K_L \lor v_R \in K_R.
+\end{equation}
+Now consider the subset of elements in $P$ that are \emph{not} covered by $K^*$:
+\begin{equation}
+    A^* \coloneqq \{x \in P : x_L \notin K_L \text{ and } x_R \notin K_R\}.
+\end{equation}
+By the union bound (subadditivity of projections in $P$, where $P \setminus A^* = \{x \in P : x_L \in K_L\} \cup \{x \in P : x_R \in K_R\}$):
+\begin{equation}
+    |A^*| \ge N - (|K_L| + |K_R|) = N - |K^*| = N - |M^*| = |\mathcal{C}_{M^*}|.
+\end{equation}
+We claim that $A^*$ is an antichain in $P$. 
+Suppose, for contradiction, that $A^*$ is not an antichain. Then there exist distinct elements $u, v \in A^*$ such that $u <_P v$. 
+By our graph construction, this implies $(u_L, v_R) \in E_B$. 
+Because $K^*$ is a vertex cover, we must have $u_L \in K_L$ or $v_R \in K_R$. 
+However, $u \in A^*$ implies $u_L \notin K_L$, and $v \in A^*$ implies $v_R \notin K_R$, which is an immediate contradiction. 
+Therefore, $A^*$ is a valid antichain. Its cardinality satisfies:
+\begin{equation}
+    \max_A |A| \ge |A^*| \ge N - |M^*| = |\mathcal{C}_{M^*}| \ge \min_{\mathcal{C}} |\mathcal{C}|.
+\end{equation}
+Combining this with weak duality (\ref{eq:weak_dilworth}) proves the exact equality:
+\begin{equation}
+    \operatorname{width}(P) = \max_A |A| = \min_{\mathcal{C}} |\mathcal{C}|.
+\end{equation}
+\end{proof}
+
+\subsection{Proof of Mirsky's dual theorem (\texorpdfstring{Equation~\ref{eq:mirsky_duality}}{Eq. 2})}
+\begin{definition}
+The \emph{poset height} is the maximum cardinality of a chain in $P$:
+\begin{equation}
+    \operatorname{height}(P) \coloneqq \max \{|C| : C \subseteq P \text{ is a chain}\}.
+\end{equation}
+An \emph{antichain partition} (or antichain cover) of $P$ is a collection of disjoint antichains $\mathcal{A} = \{A_i\}_{i \in [k]}$ such that $\bigcup_{i \in [k]} A_i = P$.
+\end{definition}
+
+\begin{theorem}[Mirsky's duality theorem, Eq.~(\ref{eq:mirsky_duality})]
+For any finite poset $(P, \le)$,
+\begin{equation}
+    \operatorname{height}(P) = \min \{|\mathcal{A}| : \mathcal{A} \text{ is an antichain partition of } P\}.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+\medskip\noindent\textbf{Step 1 (Weak Duality: $\operatorname{height}(P) \le \min |\mathcal{A}|$):}
+Let $C \subseteq P$ be an arbitrary chain, and let $\mathcal{A} = \{A_i\}_{i \in [k]}$ be an arbitrary antichain partition of $P$. 
+Because the antichains are disjoint and cover $P$:
+\begin{equation}
+    |C| = \sum_{i \in [k]} |C \cap A_i|.
+\end{equation}
+For any $i \in [k]$, suppose $|C \cap A_i| \ge 2$. Then there exist distinct $u, v \in C \cap A_i$. Since $u, v \in C$, they are comparable. But since $u, v \in A_i$, they are incomparable, a contradiction. Hence $|C \cap A_i| \le 1$ for all $i \in [k]$, yielding:
+\begin{equation}
+    |C| = \sum_{i \in [k]} |C \cap A_i| \le \sum_{i \in [k]} 1 = k = |\mathcal{A}|.
+\end{equation}
+Taking the maximum over chains $C$ and minimum over antichain partitions $\mathcal{A}$:
+\begin{equation}
+    \max_C |C| \le \min_{\mathcal{A}} |\mathcal{A}|.
+\end{equation}
+
+\medskip\noindent\textbf{Step 2 (Strong Duality: Constructive Level Sets):}
+Let $h^* \coloneqq \operatorname{height}(P) = \max_C |C|$. For each element $x \in P$, define its chain rank $r(x)$ as the maximum length of a chain ending at $x$:
+\begin{equation}
+    r(x) \coloneqq \max \{|C| : C \subseteq P \text{ is a chain with maximum element } x\}.
+\end{equation}
+Clearly, for every $x \in P$, $1 \le r(x) \le h^*$. Now partition the ground set $P$ into $h^*$ level sets:
+\begin{equation}
+    A_k \coloneqq \{x \in P : r(x) = k\}, \quad \text{for } k \in [h^*].
+\end{equation}
+By definition, every $x \in P$ belongs to exactly one $A_k$, so $\mathcal{A}^* = \{A_k\}_{k \in [h^*]}$ is a partition of $P$ of size $|\mathcal{A}^*| = h^*$.
+We show that each $A_k$ is an antichain. 
+Suppose not: there exist distinct $u, v \in A_k$ such that $u <_P v$. 
+By definition of $r(u) = k$, there exists a chain $C_u = \{x_j\}_{j \in [k]}$ ($x_1 <_P x_2 <_P \dots <_P x_k = u$) of length $k$ ending at $u$. 
+Since $u <_P v$, setting $x_{k+1} \coloneqq v$ yields an extended chain:
+\begin{equation}
+    C_v \coloneqq C_u \cup \{v\} = \{x_j\}_{j \in [k+1]}.
+\end{equation}
+$C_v$ is a chain of length $k+1$ ending at $v$. Consequently, $r(v) \ge k+1$. 
+However, $v \in A_k$ implies $r(v) = k$, yielding $k \ge k+1$, a contradiction. 
+Thus, each $A_k$ is an antichain. 
+Hence, $\mathcal{A}^*$ is a valid antichain partition of cardinality $h^* = \max |C|$. Therefore:
+\begin{equation}
+    \min_{\mathcal{A}} |\mathcal{A}| \le |\mathcal{A}^*| = \max_C |C|.
+\end{equation}
+Combining both directions establishes:
+\begin{equation}
+    \operatorname{height}(P) = \max_C |C| = \min_{\mathcal{A}} |\mathcal{A}|.
+\end{equation}
+\end{proof}
+
+\subsection{Bachmann--Landau asymptotic bounds under the RAM model (\texorpdfstring{Equation~\ref{eq:bachmann_landau}}{Eq. 3})}
+Theoretical analysis of algorithms in this framework is conducted under the standard Random Access Machine (RAM) model, where basic operations take $\Theta(1)$ time. For divide-and-conquer recurrences, asymptotic runtime is derived from the work performed at each level of recursion.
+
+Consider a divide-and-conquer recurrence on an input of size $n$, partitioned into $a \ge 1$ subproblems of size $n/b$ with $b > 1$, where the divide-and-combine step takes $\Theta(n^d)$ time with $d \ge 0$. The recurrence for the worst-case running time $T(n)$ is:
+\begin{equation}
+    T(n) = a T(n/b) + \Theta(n^d).
+    \label{eq:master_recurrence}
+\end{equation}
+
+\begin{proposition}
+If $a < b^d$, then the recurrence (\ref{eq:master_recurrence}) satisfies $T(n) = \Theta(n^d)$.
+\end{proposition}
+\begin{proof}
+Without loss of generality, let $T(n) = a T(n/b) + c n^d$ for some positive constant $c > 0$ and base case $T(1) = \Theta(1)$. Since the cost at the root alone is $c n^d$, we have $T(n) \ge c n^d = \Omega(n^d)$.
+
+Unrolling the recurrence across $k = \log_b n$ recursion levels yields:
+\begin{align}
+    T(n) &= a \left( a T(n/b^2) + c \left(\frac{n}{b}\right)^d \right) + c n^d \nonumber \\
+         &= a^k T(n/b^k) + c n^d \sum_{i=0}^{k-1} \left( \frac{a}{b^d} \right)^i.
+\end{align}
+At the leaf level, $a^k T(1) = a^{\log_b n} \Theta(1) = n^{\log_b a} \Theta(1)$. Because $a < b^d$, taking base-$b$ logarithms yields $\log_b a < d$. Consequently, $n^{\log_b a} = \mathcal{O}(n^d)$.
+
+The sum over internal nodes forms a geometric series with common ratio $r = a/b^d < 1$:
+\begin{equation}
+    \sum_{i=0}^{k-1} r^i < \sum_{i=0}^{\infty} r^i = \frac{1}{1 - r}.
+\end{equation}
+Because $r$ is a fixed constant independent of $n$, $\frac{1}{1 - r} = \mathcal{O}(1)$. Hence, the total contribution of all internal nodes satisfies $c n^d \sum_{i=0}^{k-1} r^i \le \frac{c}{1 - r} n^d = \mathcal{O}(n^d)$. Summing the leaf and internal contributions gives $T(n) = \mathcal{O}(n^d) + \mathcal{O}(n^d) = \mathcal{O}(n^d)$.
+
+Combining the lower bound $T(n) = \Omega(n^d)$ with the upper bound $T(n) = \mathcal{O}(n^d)$ establishes:
+\begin{equation}
+    T(n) = \Theta(n^d).
+\end{equation}
+\end{proof}
+
+\section{Phase 2: hardware-aware systems transformations}
+Section~\ref{sec:phase2_cpp} addresses hardware memory hierarchies, the Aggarwal--Vitter external-memory model (\ref{eq:scan_bound}), and the Fast Zeta Transform (\ref{eq:fzt_transform}).
+
+\subsection{Aggarwal--Vitter I/O scanning bound (\texorpdfstring{Equation~\ref{eq:scan_bound}}{Eq. 4})}
+Under the canonical Aggarwal--Vitter model \cite{aggarwal1988input}, the computer consists of internal memory of capacity $M$ words and external memory (or cache/main-memory boundary) accessed in discrete blocks of $B$ words, with $1 \le B \le M/2$ and $M < N$.
+
+\begin{proposition}
+Scanning an array of $N$ contiguous scalar elements starting at memory word address $A_0$ requires:
+\begin{equation}
+    Q(N, B) \le \left\lceil \frac{N}{B} \right\rceil + 1 \quad \text{I/O transfers}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Memory is segmented into aligned blocks $K_j \coloneqq [jB, (j+1)B - 1]$ for $j \in \mathbb{Z}_{\ge 0}$.
+Let the array occupy contiguous words from address $A_0$ to $A_0 + N - 1$.
+The index of the first block accessed is:
+\begin{equation}
+    j_{\text{start}} = \left\lfloor \frac{A_0}{B} \right\rfloor.
+\end{equation}
+The index of the final block accessed is:
+\begin{equation}
+    j_{\text{end}} = \left\lfloor \frac{A_0 + N - 1}{B} \right\rfloor.
+\end{equation}
+The total number of block transfers $Q(N, B)$ is the number of distinct blocks in the range $[j_{\text{start}}, j_{\text{end}}]$:
+\begin{equation}
+    Q(N, B) = j_{\text{end}} - j_{\text{start}} + 1 = \left\lfloor \frac{A_0 + N - 1}{B} \right\rfloor - \left\lfloor \frac{A_0}{B} \right\rfloor + 1.
+\end{equation}
+Using the algebraic division identity $A_0 = q B + r$ with $q = \lfloor A_0 / B \rfloor$ and remainder $r \in [B-1]_0$:
+\begin{align}
+    Q(N, B) &= \left\lfloor \frac{q B + r + N - 1}{B} \right\rfloor - q + 1 \\
+    &= q + \left\lfloor \frac{r + N - 1}{B} \right\rfloor - q + 1 \\
+    &= \left\lfloor \frac{N + r - 1}{B} \right\rfloor + 1.
+\end{align}
+Since $r \in [B-1]_0$ (so $r \le B - 1$), we bound $N + r - 1 \le N + B - 2$:
+\begin{equation}
+    Q(N, B) \le \left\lfloor \frac{N + B - 2}{B} \right\rfloor + 1 = \left\lfloor \frac{N - 2}{B} + 1 \right\rfloor + 1 \le \left\lceil \frac{N}{B} \right\rceil + 1.
+\end{equation}
+When the array is block-aligned ($r = 0$), $Q(N, B) = \lfloor (N - 1)/B \rfloor + 1 = \lceil N/B \rceil$. In all cases, $Q(N, B) = \Theta(\lceil N/B \rceil)$.
+
+In contrast, consider a pointer-based data structure (e.g., standard pointer-based binary tree or linked list) of $N$ nodes allocated non-contiguously on the heap. Let the address space size be $U \gg M$. The probability that two consecutively visited pointer nodes reside in the same block $B$ is bounded by $B/U \approx 0$. When the cache capacity $M$ is exceeded, every node traversal dereferences an uncached pointer, incurring a distinct block miss:
+\begin{equation}
+    Q_{\text{pointer}}(N, B) = \Omega(N).
+\end{equation}
+The algorithmic speedup in memory bus throughput achieved by contiguous flat layouts is:
+\begin{equation}
+    \frac{Q_{\text{pointer}}(N, B)}{Q_{\text{contiguous}}(N, B)} \ge \frac{c_1 N}{c_2 (N/B + 1)} = \Omega(B).
+\end{equation}
+For standard 64-byte cache lines and 64-bit integer values ($B = 8$), this achieves an 8-fold reduction in cache-miss traffic.
+\end{proof}
+
+\subsection{Fast Zeta Transform (FZT / SOS DP) algebraic derivation (\texorpdfstring{Equation~\ref{eq:fzt_transform}}{Eq. 5})}
+Let the state space be indexed by subsets of $[N]$, or equivalently bitmasks in $\{0, 1\}^N$. For a set function $F: \mathcal{P}([N]) \to \mathbb{R}$, its sub-lattice sum (Zeta transform over the Boolean lattice $(\mathcal{B}_N, \subseteq)$) is:
+\begin{equation}
+    \hat{F}(S) \coloneqq \sum_{T \subseteq S} F(T), \quad \forall S \subseteq [N].
+\end{equation}
+
+\subsubsection*{Naive complexity calculation via binomial expansion}
+Direct evaluation iterates over all masks $S$, and for each $S$, enumerates all submasks $T \subseteq S$. The total number of operations is:
+\begin{equation}
+    \sum_{S \subseteq [N]} 2^{|S|}.
+\end{equation}
+Group subsets by their size $k = |S| \in [N]_0$. The number of subsets of size $k$ is $\binom{N}{k}$, each possessing $2^k$ submasks:
+\begin{equation}
+    \sum_{S \subseteq [N]} 2^{|S|} = \sum_{k \in [N]_0} \binom{N}{k} 2^k.
+\end{equation}
+By the Binomial Theorem, $\sum_{k \in [N]_0} \binom{N}{k} x^k y^{N-k} = (x + y)^N$. Setting $x = 2$ and $y = 1$:
+\begin{equation}
+    \sum_{k \in [N]_0} \binom{N}{k} 2^k 1^{N-k} = (2 + 1)^N = 3^N.
+\end{equation}
+Hence, naive evaluation requires exactly $3^N$ operations.
+
+\subsubsection*{Yates's dynamic programming recurrence}
+To reduce complexity to $\Theta(N 2^N)$, define prefix-restricted functions $F^{(i)}: \mathcal{P}([N]) \to \mathbb{R}$ for each stage $i \in [N]_0$:
+\begin{equation}
+    F^{(i)}(S) \coloneqq \sum \{F(T) : T \subseteq S \text{ and } T \setminus [i] = S \setminus [i]\}.
+\end{equation}
+Notice the boundary conditions:
+\begin{enumerate}
+    \item For $i = 0$: $T \setminus \emptyset = S \setminus \emptyset \iff T = S$. Hence $F^{(0)}(S) = F(S)$.
+    \item For $i = N$: $T \setminus [N] = S \setminus [N] = \emptyset$, which imposes no restriction on elements within $[N]$. Hence $F^{(N)}(S) = \sum_{T \subseteq S} F(T) = \hat{F}(S)$.
+\end{enumerate}
+
+\begin{proposition}[FZT stage transition]
+For any $i \in [N]$ and $S \subseteq [N]$:
+\begin{equation}
+    F^{(i)}(S) = \begin{cases}
+        F^{(i-1)}(S) & \text{if } i \notin S, \\
+        F^{(i-1)}(S) + F^{(i-1)}(S \setminus \{i\}) & \text{if } i \in S.
+    \end{cases}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+By definition:
+\begin{equation}
+    F^{(i)}(S) = \sum \{F(T) : T \subseteq S, \; T \setminus [i] = S \setminus [i]\}.
+\end{equation}
+Split the condition on whether the $i$-th bit of $T$ is $0$ or $1$:
+\begin{itemize}
+    \item \textbf{Case 1 ($i \notin S$):} Since $T \subseteq S$, we must have $i \notin T$. Thus $T \setminus [i-1] = T \setminus [i]$ and $S \setminus [i-1] = S \setminus [i]$. The condition $T \setminus [i] = S \setminus [i]$ is equivalent to $T \setminus [i-1] = S \setminus [i-1]$. Therefore:
+    \begin{equation}
+        F^{(i)}(S) = F^{(i-1)}(S).
+    \end{equation}
+    \item \textbf{Case 2 ($i \in S$):} $T$ may either contain $i$ ($i \in T$) or not ($i \notin T$).
+    Partition the summation into these two mutually exclusive sets:
+    \begin{equation}
+        F^{(i)}(S) = \sum_{\substack{T \subseteq S \\ T \setminus [i] = S \setminus [i] \\ i \in T}} F(T) + \sum_{\substack{T \subseteq S \\ T \setminus [i] = S \setminus [i] \\ i \notin T}} F(T).
+    \end{equation}
+    For the first sum (where $i \in T$), $T \setminus [i-1] = (T \setminus [i]) \cup \{i\}$ and $S \setminus [i-1] = (S \setminus [i]) \cup \{i\}$. Thus $T \setminus [i] = S \setminus [i] \iff T \setminus [i-1] = S \setminus [i-1]$, which is precisely the definition of $F^{(i-1)}(S)$.
+    
+    For the second sum (where $i \notin T$), $T \subseteq S \setminus \{i\}$. Moreover, $T \setminus [i-1] = T \setminus [i]$ and $(S \setminus \{i\}) \setminus [i-1] = S \setminus [i]$. Hence $T \setminus [i] = S \setminus [i] \iff T \setminus [i-1] = (S \setminus \{i\}) \setminus [i-1]$, which is precisely $F^{(i-1)}(S \setminus \{i\})$.
+    
+    Adding both terms yields:
+    \begin{equation}
+        F^{(i)}(S) = F^{(i-1)}(S) + F^{(i-1)}(S \setminus \{i\}).
+    \end{equation}
+\end{itemize}
+\end{proof}
+
+\subsubsection*{Complexity derivation}
+There are $N$ outer iterations ($i \in [N]$). In iteration $i$, an addition is performed only for masks $S$ where the $i$-th bit is $1$. The number of such masks is exactly $2^{N-1}$. Thus, the total number of scalar additions across the algorithm is:
+\begin{equation}
+    \sum_{i \in [N]} 2^{N-1} = N 2^{N-1} = \Theta(N 2^N).
+\end{equation}
+
+\subsection{Ranked disjoint subset convolution}
+The disjoint subset convolution evaluates:
+\begin{equation}
+    (F * G)(S) \coloneqq \sum_{\substack{T \cup U = S \\ T \cap U = \emptyset}} F(T) G(U) = \sum_{T \subseteq S} F(T) G(S \setminus T).
+\end{equation}
+When computing over pairs $(T, U)$ satisfying $T \cup U = S$, the disjointness condition $T \cap U = \emptyset$ is enforced via polynomial degree ranking: since $|T \cup U| = |T| + |U| - |T \cap U|$, we have $|T| + |U| = |S| \iff |T \cap U| = 0$.
+We introduce polynomial ranking. For each $k \in [N]_0$, define the ranked slice:
+\begin{equation}
+    f_k(S) \coloneqq \begin{cases} F(S) & \text{if } |S| = k, \\ 0 & \text{otherwise.} \end{cases}
+    \quad \text{and} \quad
+    g_k(S) \coloneqq \begin{cases} G(S) & \text{if } |S| = k, \\ 0 & \text{otherwise.} \end{cases}
+\end{equation}
+
+\begin{enumerate}
+    \item \textbf{Forward Transform:} Compute $\hat{f}_k = \operatorname{FZT}(f_k)$ and $\hat{g}_k = \operatorname{FZT}(g_k)$ for all $k \in [N]_0$. 
+    This requires $2(N+1)$ calls to FZT:
+    \begin{equation}
+        T_{\text{forward}} = 2(N+1) \cdot (N 2^{N-1}) = \Theta(N^2 2^N).
+    \end{equation}
+    \item \textbf{Pointwise Polynomial Convolution:} For each mask $S \in \{0, 1\}^N$, compute the Cauchy product:
+    \begin{equation}
+        \hat{h}_k(S) = \sum_{j \in [k]_0} \hat{f}_j(S) \hat{g}_{k-j}(S), \quad \forall k \in [N]_0.
+    \end{equation}
+    For each mask $S$, computing $\hat{h}_k(S)$ for all $k \in [N]_0$ takes $\sum_{k \in [N]_0} (k+1) = \frac{(N+1)(N+2)}{2}$ operations.
+    Across all $2^N$ masks:
+    \begin{equation}
+        T_{\text{pointwise}} = 2^N \cdot \frac{(N+1)(N+2)}{2} = \Theta(N^2 2^N).
+    \end{equation}
+    \item \textbf{Inverse Transform (Fast Möbius Transform):} Compute $h_k = \operatorname{IFZT}(\hat{h}_k)$ for each $k \in [N]_0$ by inverting the Yates step. Initializing the base case state as $H^{(0)} = \hat{h}_k$, we evaluate the recurrence for $i = 1, \dots, N$:
+    \begin{equation}
+        H^{(i)}(S) = \begin{cases}
+            H^{(i-1)}(S) & \text{if } i \notin S, \\
+            H^{(i-1)}(S) - H^{(i-1)}(S \setminus \{i\}) & \text{if } i \in S.
+        \end{cases}
+    \end{equation}
+    The terminal extraction state yields $h_k = H^{(N)}$, where $N$ is the dimension of the set. This requires $(N+1)$ inverse transforms:
+    \begin{equation}
+        T_{\text{inverse}} = (N+1) \cdot (N 2^{N-1}) = \Theta(N^2 2^N).
+    \end{equation}
+    \item \textbf{Extraction:} Recover $(F * G)(S) = h_{|S|}(S)$.
+\end{enumerate}
+Summing all stages confirms the total operational complexity:
+\begin{equation}
+    T_{\text{total}} = T_{\text{forward}} + T_{\text{pointwise}} + T_{\text{inverse}} = \Theta(N^2 2^N).
+\end{equation}
+
+\begin{proof}[Proof of combinatorial correctness]
+By definition of the forward Fast Zeta Transform on ranked slices, for any $W \subseteq [N]$:
+\begin{equation}
+    \hat{f}_j(W) = \sum_{\substack{T \subseteq W \\ |T| = j}} F(T) \quad \text{and} \quad \hat{g}_{k-j}(W) = \sum_{\substack{U \subseteq W \\ |U| = k-j}} G(U).
+\end{equation}
+The pointwise Cauchy product in Step~2 evaluates:
+\begin{equation}
+    \hat{h}_k(W) = \sum_{j \in [k]_0} \hat{f}_j(W) \hat{g}_{k-j}(W) = \sum_{\substack{T \subseteq W, U \subseteq W \\ |T| + |U| = k}} F(T) G(U) = \sum_{\substack{T \cup U \subseteq W \\ |T| + |U| = k}} F(T) G(U).
+\end{equation}
+Applying the Fast Möbius Transform (IFZT) via Boolean lattice inversion extracts pairs whose union is exactly $S$:
+\begin{equation}
+    h_k(S) = \sum_{W \subseteq S} (-1)^{|S \setminus W|} \hat{h}_k(W) = \sum_{\substack{T \cup U = S \\ |T| + |U| = k}} F(T) G(U).
+\end{equation}
+In Step~4 (Extraction), setting $k = |S|$ yields:
+\begin{equation}
+    h_{|S|}(S) = \sum_{\substack{T \cup U = S \\ |T| + |U| = |S|}} F(T) G(U).
+\end{equation}
+By the principle of inclusion--exclusion for finite sets, $|T \cup U| = |T| + |U| - |T \cap U|$. For every pair $(T, U)$ in the summation, $T \cup U = S \implies |T \cup U| = |S|$. Substituting $|T| + |U| = |S|$ into the cardinality identity yields:
+\begin{equation}
+    |S| = |S| - |T \cap U| \implies |T \cap U| = 0 \iff T \cap U = \emptyset.
+\end{equation}
+Hence, non-zero contributions occur if and only if $U = S \setminus T$ and $T \cap U = \emptyset$, which exactly establishes:
+\begin{equation}
+    h_{|S|}(S) = \sum_{\substack{T \cup U = S \\ T \cap U = \emptyset}} F(T) G(U) = (F * G)(S).
+\end{equation}
+This confirms that the ranked polynomial convolution correctly filters out overlapping subsets.
+\end{proof}
+
+\section{Phase 3: statistical differential testing sample complexity}
+Section~\ref{sec:phase3_testing} provides the sample complexity bound $m \ge \left\lceil \frac{1}{\epsilon} \ln \frac{1}{\delta} \right\rceil$ (\ref{eq:sample_complexity}) for randomized differential testing between optimized and reference combinatorial solvers ($\mathcal{S}_{ref}$).
+
+\subsection{Rigorous derivation of the Bernoulli failure bound (\texorpdfstring{Equation~\ref{eq:sample_complexity}}{Eq. 6})}
+Let $\mathcal{D}$ be a probability distribution over input instances. Define the true error rate:
+\begin{equation}
+    p \coloneqq \mathbb{P}_{x \sim \mathcal{D}}[\mathcal{S}_{opt}(x) \neq \mathcal{S}_{ref}(x)].
+\end{equation}
+We wish to test the null hypothesis $H_0: p > \epsilon$ against the alternative hypothesis $H_1: p \le \epsilon$. 
+Suppose the test harness generates $m$ test instances $(x_i)_{i \in [m]}$ independently and identically distributed (i.i.d.) according to $\mathcal{D}$. 
+
+\begin{theorem}[Sample complexity bound]
+If $\mathcal{S}_{opt}(x_i) = \mathcal{S}_{ref}(x_i)$ for all $i \in [m]$, then choosing:
+\begin{equation}
+    m \ge \left\lceil \frac{1}{\epsilon} \ln \left( \frac{1}{\delta} \right) \right\rceil
+\end{equation}
+guarantees that $\mathbb{P}[\text{reject } H_0 \mid p > \epsilon] = \mathbb{P}[\mathcal{S}_{opt}(x_i) = \mathcal{S}_{ref}(x_i) \; \forall i \in [m] \mid p > \epsilon] \le \delta$. That is, the confidence that $p \le \epsilon$ is at least $1 - \delta$.
+\end{theorem}
+
+\begin{proof}
+Let $E_i$ be the event that test $x_i$ passes without discrepancy:
+\begin{equation}
+    \mathbb{P}[E_i] = \mathbb{P}[\mathcal{S}_{opt}(x_i) = \mathcal{S}_{ref}(x_i)] = 1 - p.
+\end{equation}
+Because the $m$ tests are independent, the probability that all $m$ tests pass is:
+\begin{equation}
+    \mathbb{P}\left[ \bigcap_{i \in [m]} E_i \right] = \prod_{i \in [m]} \mathbb{P}[E_i] = (1 - p)^m.
+\end{equation}
+Under the hypothesis that the implementation is flawed ($p > \epsilon$):
+\begin{equation}
+    (1 - p)^m < (1 - \epsilon)^m.
+\end{equation}
+To ensure the probability of false rejection of $H_0$ (Type I error) is bounded by the significance parameter $\delta \in (0, 1)$, we require:
+\begin{equation}\label{eq:bernoulli_target}
+    (1 - \epsilon)^m \le \delta.
+\end{equation}
+We employ the analytical inequality $\ln(1 - x) < -x$ for all $x \in (0, 1)$. 
+To prove this inequality rigorously, observe that by the Fundamental Theorem of Calculus:
+\begin{equation}
+    \ln(1 - \epsilon) = \int_1^{1-\epsilon} \frac{1}{t} \, dt = -\int_0^\epsilon \frac{1}{1 - t} \, dt.
+\end{equation}
+For all $t \in (0, \epsilon)$ with $\epsilon \in (0, 1)$, we have $1 - t < 1$, which implies $\frac{1}{1-t} > 1$. Therefore:
+\begin{equation}
+    -\int_0^\epsilon \frac{1}{1 - t} \, dt < -\int_0^\epsilon 1 \, dt = -\epsilon.
+\end{equation}
+Thus, $\ln(1 - \epsilon) < -\epsilon$.
+Taking the natural logarithm of both sides of (\ref{eq:bernoulli_target}):
+\begin{equation}
+    \ln\big((1 - \epsilon)^m\big) = m \ln(1 - \epsilon) \le \ln \delta.
+\end{equation}
+Since $m \ln(1 - \epsilon) < -m \epsilon$, a sufficient condition to guarantee $m \ln(1 - \epsilon) \le \ln \delta$ is:
+\begin{equation}
+    -m \epsilon \le \ln \delta.
+\end{equation}
+Multiplying both sides by $-1$ reverses the inequality:
+\begin{equation}
+    m \epsilon \ge -\ln \delta = \ln\left(\frac{1}{\delta}\right).
+\end{equation}
+Dividing by $\epsilon > 0$ gives the explicit discrete bound:
+\begin{equation}
+    m \ge \left\lceil \frac{1}{\epsilon} \ln \left( \frac{1}{\delta} \right) \right\rceil.
+\end{equation}
+\end{proof}
+
+\begin{remark}[Comparison with exact sample count]
+The exact minimal sample count is $m^* \coloneqq \left\lceil \frac{\ln \delta}{\ln(1 - \epsilon)} \right\rceil$. 
+Using the Taylor series expansion $\ln(1 - \epsilon) = -\epsilon - \frac{\epsilon^2}{2} - \mathcal{O}(\epsilon^3)$:
+\begin{equation}
+    \frac{\ln(1/\delta)}{-\ln(1 - \epsilon)} = \frac{\ln(1/\delta)}{\epsilon + \frac{\epsilon^2}{2} + \dots} = \frac{1}{\epsilon} \ln\left(\frac{1}{\delta}\right) \left( 1 - \frac{\epsilon}{2} + \mathcal{O}(\epsilon^2) \right).
+\end{equation}
+Thus, our closed-form estimate $\frac{1}{\epsilon} \ln(1/\delta)$ overestimates the exact threshold by a relative factor of approximately $1 + \frac{\epsilon}{2}$ (an additive difference of $\approx \frac{1}{2} \ln \frac{1}{\delta}$ instances), providing a safe and computationally convenient threshold for automated testing harnesses.
+\end{remark}
+
+\section{Mathematical invariants of curricular algorithms (\texorpdfstring{Section~\ref{sec:curriculum}}{Section 4})}
+Section~\ref{sec:curriculum} outlines algorithms across the curriculum. Below are the complete derivations for the five core formulations.
+
+\subsection{Rollback DSU depth bound (\texorpdfstring{Equation~\ref{eq:dsu_depth}}{Eq. 7})}
+\begin{theorem}
+In a Disjoint-Set Union (DSU) structure over $N$ elements maintaining union-by-size without path compression, the maximum depth of any tree is bounded by:
+\begin{equation}
+    \operatorname{depth}(\mathcal{T}) \le \lfloor \log_2 N \rfloor.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Let $\mathcal{T}$ be any rooted tree produced by union-by-size. Let $S(\mathcal{T}) = |V(\mathcal{T})|$ denote the number of vertices in $\mathcal{T}$, and let $h(\mathcal{T})$ denote its height (maximum edge distance from the root to any leaf).
+We prove by induction on the number of union operations that:
+\begin{equation}\label{eq:dsu_induct}
+    S(\mathcal{T}) \ge 2^{h(\mathcal{T})}.
+\end{equation}
+
+\medskip\noindent\textbf{Base Case:} Before any unions occur, each element forms a singleton tree $\mathcal{T}$. Here $S(\mathcal{T}) = 1$ and $h(\mathcal{T}) = 0$. Since $2^0 = 1 \le 1$, the base case holds with equality.
+
+\medskip\noindent\textbf{Inductive Step:} Consider merging two disjoint trees $\mathcal{T}_1$ and $\mathcal{T}_2$ with roots $r_1$ and $r_2$. By induction, $S(\mathcal{T}_1) \ge 2^{h(\mathcal{T}_1)}$ and $S(\mathcal{T}_2) \ge 2^{h(\mathcal{T}_2)}$.
+Without loss of generality, assume $S(\mathcal{T}_1) \ge S(\mathcal{T}_2)$. 
+Under union-by-size, the root of the smaller tree $r_2$ is attached as a child of $r_1$.
+The size of the merged tree $\mathcal{T}'$ is:
+\begin{equation}
+    S(\mathcal{T}') = S(\mathcal{T}_1) + S(\mathcal{T}_2).
+\end{equation}
+The height of the merged tree is:
+\begin{equation}
+    h(\mathcal{T}') = \max\big(h(\mathcal{T}_1), h(\mathcal{T}_2) + 1\big).
+\end{equation}
+We analyze the two cases:
+\begin{itemize}
+    \item \textbf{Case 1 ($h(\mathcal{T}_1) \ge h(\mathcal{T}_2) + 1$):} Then $h(\mathcal{T}') = h(\mathcal{T}_1)$. Thus:
+    \begin{equation}
+        S(\mathcal{T}') = S(\mathcal{T}_1) + S(\mathcal{T}_2) > S(\mathcal{T}_1) \ge 2^{h(\mathcal{T}_1)} = 2^{h(\mathcal{T}')}.
+    \end{equation}
+    \item \textbf{Case 2 ($h(\mathcal{T}_1) < h(\mathcal{T}_2) + 1$, which implies $h(\mathcal{T}_1) \le h(\mathcal{T}_2)$):} Then $h(\mathcal{T}') = h(\mathcal{T}_2) + 1$. 
+    Because $S(\mathcal{T}_1) \ge S(\mathcal{T}_2)$, we have:
+    \begin{equation}
+        S(\mathcal{T}') = S(\mathcal{T}_1) + S(\mathcal{T}_2) \ge S(\mathcal{T}_2) + S(\mathcal{T}_2) = 2 S(\mathcal{T}_2).
+    \end{equation}
+    Applying the induction hypothesis to $\mathcal{T}_2$:
+    \begin{equation}
+        S(\mathcal{T}') \ge 2 \cdot 2^{h(\mathcal{T}_2)} = 2^{h(\mathcal{T}_2) + 1} = 2^{h(\mathcal{T}')}.
+    \end{equation}
+\end{itemize}
+In both cases, (\ref{eq:dsu_induct}) holds. 
+Since the total number of elements in the entire universe is $N$, any tree must satisfy $S(\mathcal{T}) \le N$. Therefore:
+\begin{equation}
+    2^{h(\mathcal{T})} \le S(\mathcal{T}) \le N \implies h(\mathcal{T}) \le \log_2 N.
+\end{equation}
+Because $h(\mathcal{T}) \in \mathbb{Z}_{\ge 0}$, we conclude:
+\begin{equation}
+    h(\mathcal{T}) \le \lfloor \log_2 N \rfloor.
+\end{equation}
+Every \texttt{find} query traverses at most $h(\mathcal{T})$ edges, guaranteeing worst-case $\mathcal{O}(\log N)$ time. 
+
+Furthermore, because path compression is omitted, a \texttt{union} operation modifies exactly two memory locations: the parent pointer of $r_2$ ($\operatorname{parent}[r_2] \leftarrow r_1$) and the size of $r_1$ ($\operatorname{size}[r_1] \leftarrow \operatorname{size}[r_1] + \operatorname{size}[r_2]$). Pushing $(r_2, r_1, \operatorname{size}[r_2])$ onto an execution stack allows state rollback in $\Theta(1)$ time per operation.
+\end{proof}
+
+\subsection{Dinic's algorithm complexity on unit networks (\texorpdfstring{Equation~\ref{eq:dinic_complexity}}{Eq. 8})}
+Let $G = (V, E, c)$ be a network with source $s$ and sink $t$. Dinic's algorithm proceeds in phases: each phase constructs a layered graph via BFS and pushes blocking flows via DFS with current-arc pointers.
+
+\begin{lemma}[Strict distance monotonicity]
+Let $d_k(u)$ denote the shortest path distance from $s$ to $u$ in the residual graph $G_f^{(k)}$ at phase $k$. Then:
+\begin{equation}
+    d_{k+1}(s, t) \ge d_k(s, t) + 1.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+During phase $k$, the blocking flow saturates at least one edge on every directed path of length $d_k(s, t)$ in the layered graph $L_k$. Any new edge introduced into the residual graph $G_f^{(k+1)}$ must be the reversal of an edge $(u, v)$ carrying flow in $L_k$. Since $(u, v) \in L_k$ implies $d_k(v) = d_k(u) + 1$, the reverse edge satisfies $d_k(u) = d_k(v) - 1$. 
+Thus, reverse edges only point to preceding layers. Consequently, any augmenting path in $G_f^{(k+1)}$ that utilizes newly introduced residual edges must traverse backward layers, strictly increasing its length: $d_{k+1}(s, t) \ge d_k(s, t) + 1$.
+\end{proof}
+
+\begin{theorem}[Unit network complexity bound]
+In a unit network (where edge capacities are $1$) that also has unit vertex capacities (where each vertex $v \in V \setminus \{s, t\}$ has capacity $c(v) = 1$), Dinic's algorithm terminates in $\mathcal{O}(|E|\sqrt{|V|})$ time.
+\end{theorem}
+
+\begin{proof}
+We divide the execution into two stages based on the threshold parameter $K \coloneqq \lfloor \sqrt{|V|} \rfloor$:
+\begin{enumerate}
+    \item \textbf{Stage 1 ($d_k(s, t) \le K$):} By distance monotonicity, the distance $d_k(s, t)$ increases by at least $1$ in each phase. Thus, the number of phases with $d_k(s, t) \le K$ is at most $K \le \sqrt{|V|}$. 
+    With unit vertex and edge capacities, each vertex and each edge is traversed and saturated at most once per phase, so a blocking flow is found in $\mathcal{O}(|E|)$ time. The total time for Stage 1 is:
+    \begin{equation}
+        T_1 = \mathcal{O}(|E| \cdot \sqrt{|V|}).
+    \end{equation}
+    \item \textbf{Stage 2 ($d_k(s, t) \ge K + 1$):} Consider the integer residual flow $f^* - f$ at the beginning of this stage. By the flow decomposition theorem, this acyclic residual flow decomposes into a set of directed paths from $s$ to $t$ carrying $1$ unit of flow each. Each such path has length at least $d(s, t) \ge K + 1$.
+    Because vertices $v \in V \setminus \{s, t\}$ have unit capacity, each vertex can participate in at most one such path. Thus, the paths are vertex-disjoint. A path of length $d(s, t)$ consumes exactly $d(s, t) - 1 \ge K$ intermediate vertices from the pool of $|V| - 2$ vertices. Therefore, the number of such paths (and hence the remaining flow value) is bounded by:
+    \begin{equation}
+        |f^* - f| \le \left\lfloor \frac{|V|-2}{K} \right\rfloor \le K + 1 \le \sqrt{|V|} + 1 = \mathcal{O}(\sqrt{|V|}),
+    \end{equation}
+    where the intermediate inequality holds because $|V| \le (K+1)^2 - 1 = K^2 + 2K$ implies $\frac{|V|-2}{K} \le K + 2 - \frac{2}{K} < K + 2$.
+    Each subsequent phase pushes at least $1$ unit of flow. Thus, there can be at most $\sqrt{|V|} + 1$ additional phases. Each phase requires $\mathcal{O}(|E|)$ work, yielding:
+    \begin{equation}
+        T_2 = \mathcal{O}(|E| \cdot \sqrt{|V|}).
+    \end{equation}
+\end{enumerate}
+Summing both stages:
+\begin{equation}
+    T_{\text{unit}}(V, E) = T_1 + T_2 = \mathcal{O}(|E|\sqrt{|V|}).
+\end{equation}
+\end{proof}
+
+\subsection{Kasai's linear-time LCP construction invariant (\texorpdfstring{Equation~\ref{eq:kasai_invariant}}{Eq. 9})}
+This section formalizes the invariants of Kasai's algorithm \cite{kasai2001linear} for linear-time LCP array construction.
+Let $S$ be a string of length $N = |S|$, and let $\operatorname{SA}$ be its suffix array. Let $\operatorname{rank}[i]$ be the inverse permutation, satisfying $\operatorname{SA}[\operatorname{rank}[i]] = i$.
+For each $i \in [N]$, define $h[i] \coloneqq \operatorname{LCP}(S[i \dots N], S[j \dots N])$, where $j = \operatorname{SA}[\operatorname{rank}[i] - 1]$ if $\operatorname{rank}[i] > 1$, and define $h[i] \coloneqq 0$ if $\operatorname{rank}[i] = 1$.
+
+\begin{lemma}[LCP Interval Property]\label{lemma:lcp_interval}
+For any suffix ranks $r_1 < r_2 < r_3$,
+\begin{equation}
+    \operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_3]) = \min\big( \operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_2]), \operatorname{LCP}(\operatorname{SA}[r_2], \operatorname{SA}[r_3]) \big).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $m = \min\big( \operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_2]), \operatorname{LCP}(\operatorname{SA}[r_2], \operatorname{SA}[r_3]) \big)$. Both suffixes $\operatorname{SA}[r_1]$ and $\operatorname{SA}[r_3]$ share their first $m$ characters with $\operatorname{SA}[r_2]$. Consequently, they must share at least $m$ characters with each other, implying $\operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_3]) \ge m$. Furthermore, because the suffix array is sorted lexicographically, if $\operatorname{SA}[r_1]$ and $\operatorname{SA}[r_3]$ shared strictly more than $m$ characters, the intermediate suffix $\operatorname{SA}[r_2]$ would also share those characters, which contradicts the definition of $m$. Therefore, the exact equality holds.
+\end{proof}
+
+\begin{theorem}[Kasai's invariant, Eq.~(\ref{eq:kasai_invariant})]
+For any index $i \in [N-1]$:
+\begin{equation}
+    h[i+1] \ge h[i] - 1.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Let $k \coloneqq h[i]$. If $k \le 1$, then $h[i] - 1 \le 0$. Since LCP lengths are non-negative, $h[i+1] \ge 0 \ge h[i] - 1$ immediately follows (and $h[i+1]$ is well-defined as $0$ even if $\operatorname{rank}[i+1] = 1$).
+
+Now assume $k > 1$. This implies $\operatorname{rank}[i] > 1$. Because suffix $i$ and suffix $j$ share at least $k \ge 2$ characters, their lengths satisfy $|S[i \dots N]| \ge k$ and $|S[j \dots N]| \ge k$, which guarantees $i \le N - k < N$ and $j \le N - k < N$. Thus, suffixes $i+1$ and $j+1$ are well-defined.
+By definition, suffix $i$ and suffix $j = \operatorname{SA}[\operatorname{rank}[i] - 1]$ match on their first $k$ characters:
+\begin{equation}
+    S[i + \ell] = S[j + \ell], \quad \forall \ell \in [k-1]_0.
+\end{equation}
+In particular, for $\ell = 0$, $S[i] = S[j]$. 
+Consider suffix $i+1 = S[i+1 \dots N]$ and suffix $j+1 = S[j+1 \dots N]$. 
+Removing the first identical character from both suffixes preserves their match on the subsequent $k - 1$ characters:
+\begin{equation}
+    \operatorname{LCP}(S[i+1 \dots N], S[j+1 \dots N]) = k - 1.
+\end{equation}
+Furthermore, because suffix $j$ precedes suffix $i$ in lexicographical order ($S[j \dots N] <_{\text{lex}} S[i \dots N]$) and both share the same first character, stripping that first character preserves their relative lexicographical order:
+\begin{equation}
+    S[j+1 \dots N] <_{\text{lex}} S[i+1 \dots N].
+\end{equation}
+Thus, $\operatorname{rank}[j+1] < \operatorname{rank}[i+1]$, which implies $\operatorname{rank}[j+1] \le \operatorname{rank}[i+1] - 1$. 
+In the suffix array, the suffix immediately preceding suffix $i+1$ has rank $\operatorname{rank}[i+1] - 1$. 
+ 
+If $\operatorname{rank}[j+1] = \operatorname{rank}[i+1] - 1$, then $h[i+1] = \operatorname{LCP}(S[j+1 \dots N], S[i+1 \dots N]) = k - 1$.
+Otherwise, we have strict inequalities $\operatorname{rank}[j+1] < \operatorname{rank}[i+1] - 1 < \operatorname{rank}[i+1]$.
+By Lemma~\ref{lemma:lcp_interval} (the LCP interval property), for any suffixes with ranks $r_1 < r_2 < r_3$,
+\begin{equation}
+    \operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_3]) = \min\big( \operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_2]), \operatorname{LCP}(\operatorname{SA}[r_2], \operatorname{SA}[r_3]) \big) \le \operatorname{LCP}(\operatorname{SA}[r_2], \operatorname{SA}[r_3]).
+\end{equation}
+Setting $r_1 = \operatorname{rank}[j+1]$, $r_2 = \operatorname{rank}[i+1] - 1$, and $r_3 = \operatorname{rank}[i+1]$:
+\begin{equation}
+    h[i+1] = \operatorname{LCP}(\operatorname{SA}[r_2], \operatorname{SA}[r_3]) \ge \operatorname{LCP}(\operatorname{SA}[r_1], \operatorname{SA}[r_3]) = \operatorname{LCP}(S[j+1 \dots N], S[i+1 \dots N]) = k - 1.
+\end{equation}
+In all cases, $h[i+1] \ge k - 1 = h[i] - 1$.
+\end{proof}
+
+\subsubsection*{Amortized linear complexity}
+The algorithm computes $h[i]$ in order of text position $i \in [N]$.
+Initially, before the $i$-loop begins, the recurrence variable is set to $k = 0$.
+At each step $i$, the pointer $k$ is updated to $\max(0, k - 1)$. 
+Character comparisons then increment $k$ while characters match.
+Over all $N$ steps, $k$ is decremented at most $N$ times (at most once per step).
+Since $k \in [N]_0$, the total number of increments of pointer $k$ across the entire algorithm cannot exceed $N + N = 2N$.
+Furthermore, each of the $N$ iterations terminates with at most one mismatch comparison (or reaches the end of the string).
+Therefore, the total number of character comparisons is explicitly bounded by:
+\begin{equation}
+    C_{\text{total}} \le 2N + N = 3N = \mathcal{O}(N).
+\end{equation}
+
+\subsection{Burnside's lemma and Pólya enumeration (\texorpdfstring{Equation~\ref{eq:burnside_formula}}{Eq. 10})}
+Let a finite group $G$ act on a finite set $X$. For $x \in X$, let $\mathcal{O}_x \coloneqq \{g \cdot x : g \in G\}$ denote its orbit, and let $G_x \coloneqq \{g \in G : g \cdot x = x\}$ denote its stabilizer subgroup. For $g \in G$, let $X^g \coloneqq \{x \in X : g \cdot x = x\}$ denote its fixed-point set. Let $X/G$ denote the quotient space (the set of all distinct orbits of $X$ under the action of $G$).
+
+\begin{theorem}[Orbit-stabilizer theorem]
+For every $x \in X$,
+\begin{equation}
+    |G| = |\mathcal{O}_x| \cdot |G_x|.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Define a map $\phi: G/G_x \to \mathcal{O}_x$ from the left cosets of $G_x$ to the orbit:
+\begin{equation}
+    \phi(g G_x) \coloneqq g \cdot x.
+\end{equation}
+This map is well-defined and injective. We justify this by explicitly applying the formal group action axioms of compatibility ($g \cdot (h \cdot x) = (gh) \cdot x$) and identity ($e \cdot x = x$):
+\begin{align*}
+    g_1 \cdot x &= g_2 \cdot x \\
+    \iff g_2^{-1} \cdot (g_1 \cdot x) &= g_2^{-1} \cdot (g_2 \cdot x) \\
+    \iff (g_2^{-1} g_1) \cdot x &= (g_2^{-1} g_2) \cdot x \quad \text{(by compatibility)} \\
+    \iff (g_2^{-1} g_1) \cdot x &= e \cdot x \\
+    \iff (g_2^{-1} g_1) \cdot x &= x \quad \text{(by identity)} \\
+    \iff g_2^{-1} g_1 &\in G_x \\
+    \iff g_1 G_x &= g_2 G_x.
+\end{align*}
+Surjectivity follows by definition of the orbit $\mathcal{O}_x$. By Lagrange's Theorem, $|G| = [G : G_x] |G_x| = |\mathcal{O}_x| |G_x|$.
+\end{proof}
+
+\begin{theorem}[Burnside's lemma, Eq.~(\ref{eq:burnside_formula})]
+The number of distinct orbits $|X/G|$ is:
+\begin{equation}
+    |X/G| = \frac{1}{|G|} \sum_{g \in G} |X^g|.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Consider the incidence subset $S \subseteq G \times X$:
+\begin{equation}
+    S \coloneqq \{(g, x) \in G \times X : g \cdot x = x\}.
+\end{equation}
+We evaluate $|S|$ by double counting:
+\begin{equation}
+    |S| = \sum_{g \in G} |\{x \in X : g \cdot x = x\}| = \sum_{g \in G} |X^g|.
+\end{equation}
+Summing over elements $x \in X$ instead:
+\begin{equation}
+    |S| = \sum_{x \in X} |\{g \in G : g \cdot x = x\}| = \sum_{x \in X} |G_x|.
+\end{equation}
+Partition $X$ into its disjoint orbits $X = \bigsqcup_{\omega \in X/G} \omega$:
+\begin{equation}
+    \sum_{x \in X} |G_x| = \sum_{\omega \in X/G} \sum_{x \in \omega} |G_x|.
+\end{equation}
+By the Orbit-Stabilizer Theorem, for every $x \in \omega$, $|G_x| = \frac{|G|}{|\mathcal{O}_x|} = \frac{|G|}{|\omega|}$. Substituting:
+\begin{equation}
+    \sum_{\omega \in X/G} \sum_{x \in \omega} \frac{|G|}{|\omega|} = \sum_{\omega \in X/G} |\omega| \cdot \frac{|G|}{|\omega|} = \sum_{\omega \in X/G} |G| = |X/G| \cdot |G|.
+\end{equation}
+Equating the two expressions for $|S|$:
+\begin{equation}
+    \sum_{g \in G} |X^g| = |X/G| \cdot |G| \implies |X/G| = \frac{1}{|G|} \sum_{g \in G} |X^g|.
+\end{equation}
+\end{proof}
+
+\begin{corollary}[Pólya enumeration formula]
+Let $X = C^D$ be the set of colorings of a domain $D$ ($|D| = d$) with a palette $C$ of $k = |C|$ colors. We formally define the induced group action of $G \le \operatorname{Sym}(D)$ on the function space $C^D$ such that for any coloring $f \in C^D$ and permutation $g \in G$, the induced action is $(g \cdot f)(x) = f(g^{-1}x)$ for all $x \in D$.
+
+Let $X^g$ be the set of colorings fixed by $g$. If a coloring is fixed ($g \cdot f = f$), then $(g \cdot f)(x) = f(x)$, which means $f(g^{-1}x) = f(x)$ for all $x \in D$. Replacing $x$ with $gx$, we obtain $f(x) = f(gx)$. By iterative application, $f(x) = f(gx) = f(g^2x) = \dots$, which forces the coloring $f$ to be constant on each disjoint cycle of the permutation $g$. 
+
+Each permutation $g \in G$ decomposes into $c(g)$ disjoint cycles. Explicitly, we define $c_j(g)$ as the number of cycles of length $j$ in the disjoint cycle decomposition of permutation $g$. Since $f$ can take any of the $k$ colors independently on each cycle, the number of fixed colorings is $|X^g| = \prod_{j} k^{c_j(g)} = k^{c(g)}$. Burnside's Lemma yields:
+\begin{equation}
+    |C^D / G| = \frac{1}{|G|} \sum_{g \in G} k^{c(g)}.
+\end{equation}
+
+To connect this to the cycle index polynomial $Z_G(t_1, \dots, t_d) \coloneqq \frac{1}{|G|} \sum_{g \in G} \prod_{j \in [d]} t_j^{c_j(g)}$, we substitute $t_j = k$. Since the sum of the number of cycles of all lengths equals the total number of cycles ($\sum_{j \in [d]} c_j(g) = c(g)$), we have:
+\begin{equation}
+    \prod_{j \in [d]} k^{c_j(g)} = k^{\sum_{j \in [d]} c_j(g)} = k^{c(g)}.
+\end{equation}
+Therefore, this recovers:
+\begin{equation}
+    |C^D / G| = \frac{1}{|G|} \sum_{g \in G} k^{c(g)} = Z_G(k, k, \dots, k).
+\end{equation}
+\end{corollary}
+
+\subsection{Karp reductions and transitivity (\texorpdfstring{Equation~\ref{eq:karp_reduction}}{Eq. 11})}
+\begin{lemma}[Turing machine output bound]
+\label{lem:tm_output}
+The length of the output of a multi-tape Turing Machine with a dedicated write-only output tape is bounded by its execution time. Specifically, since such a machine can write at most one symbol per step, any function $f$ computed by such a machine with actual execution time $T_f(x)$ on an input $x \in \Sigma^*$ can produce an output of length at most $T_f(x)$. Consequently, if the execution time is bounded by a polynomial $p(|x|)$, we obtain $|f(x)| \le T_f(x) \le p(|x|)$.
+\end{lemma}
+
+\begin{lemma}[Time complexity monotonicity]
+\label{lem:poly_monotonicity}
+Any polynomial time bound $p(n) = \sum_{i=0}^d a_i n^i$ can be majorized on $\mathbb{Z}_{\ge 0}$ by a polynomial $p'(n) = \sum_{i=0}^d |a_i| n^i$ with non-negative coefficients, which is monotonically non-decreasing for all $n \ge 0$.
+\end{lemma}
+
+\begin{proof}
+Let $p(n) = \sum_{i=0}^d a_i n^i$ with $a_i \in \mathbb{R}$. For all $n \in \mathbb{Z}_{\ge 0}$, since $n^i \ge 0$ (with the standard convention $0^0 = 1$), we have $a_i n^i \le |a_i| n^i$, and hence
+\begin{equation}
+    p(n) = \sum_{i=0}^d a_i n^i \le \sum_{i=0}^d |a_i| n^i \eqqcolon p'(n).
+\end{equation}
+Furthermore, for any $n_1, n_2 \in \mathbb{Z}_{\ge 0}$ with $n_1 \le n_2$, each power satisfies $n_1^i \le n_2^i$. Since $|a_i| \ge 0$ for all $i \in [d]_0$, it follows that $|a_i| n_1^i \le |a_i| n_2^i$, whence $p'(n_1) \le p'(n_2)$. Thus, $p'(n)$ is monotonically non-decreasing on $\mathbb{Z}_{\ge 0}$.
+\end{proof}
+
+\begin{proposition}[Transitivity of many-one reductions]
+Let $L_1, L_2, L_3 \subseteq \Sigma^*$ be formal languages. If $L_1 \le_p L_2$ and $L_2 \le_p L_3$, then $L_1 \le_p L_3$.
+\end{proposition}
+
+\begin{proof}
+By definition of Karp reduction (\ref{eq:karp_reduction}):
+\begin{enumerate}
+    \item $L_1 \le_p L_2 \implies \exists f: \Sigma^* \to \Sigma^*$ such that $\forall x \in \Sigma^*$, $f(x)$ is computable in time $p_1(|x|)$ and $x \in L_1 \iff f(x) \in L_2$.
+    \item $L_2 \le_p L_3 \implies \exists g: \Sigma^* \to \Sigma^*$ such that $\forall y \in \Sigma^*$, $g(y)$ is computable in time $p_2(|y|)$ and $y \in L_2 \iff g(y) \in L_3$.
+\end{enumerate}
+Define the composed function $h \coloneqq g \circ f: \Sigma^* \to \Sigma^*$. 
+For any $x \in \Sigma^*$:
+\begin{equation}
+    x \in L_1 \iff f(x) \in L_2 \iff g(f(x)) \in L_3 \iff h(x) \in L_3.
+\end{equation}
+Furthermore, by Lemma~\ref{lem:tm_output}, the output length of reduction $f$ satisfies $|f(x)| \le T_f(x) \le p_1(|x|)$. By Lemma~\ref{lem:poly_monotonicity}, we may assume without loss of generality that $p_1$ and $p_2$ are monotonically non-decreasing polynomials. Thus, the execution time of $g(f(x))$ satisfies $T_g(f(x)) \le p_2(|f(x)|) \le p_2(p_1(|x|))$.
+Accounting for the multi-tape Turing machine composition overhead (where rewinding the intermediate tape head takes at most $c \cdot |f(x)|$ steps for some constant $c > 0$):
+\begin{equation}
+    T_h(x) \le T_f(x) + c |f(x)| + T_g(f(x)) \le (c + 1) p_1(|x|) + p_2(p_1(|x|)).
+\end{equation}
+Because the composition and sum of polynomials is a polynomial, $h$ is computable in polynomial time. Hence $L_1 \le_p L_3$.
+\end{proof}
+
+\section{Summary of cross-reference synchronization}
+The core foundational equations in this supplementary text synchronize directly with the main manuscript:
+\begin{itemize}
+    \item Poset duality relations (\ref{eq:poset_duality}) and (\ref{eq:mirsky_duality}) in Section~\ref{sec:phase1_math}.
+    \item Bachmann--Landau recurrence bound (\ref{eq:bachmann_landau}) in Section~\ref{sec:phase1_math}.
+    \item External-memory scanning bound (\ref{eq:scan_bound}) in Section~\ref{sec:phase2_cpp}.
+    \item Fast Zeta Transform recurrence (\ref{eq:fzt_transform}) in Section~\ref{sec:phase2_cpp}.
+    \item Differential testing sample complexity (\ref{eq:sample_complexity}) in Section~\ref{sec:phase3_testing}.
+    \item Rollback DSU depth bound (\ref{eq:dsu_depth}) in Section~\ref{sec:curriculum}.
+    \item Dinic's unit network bounds (\ref{eq:dinic_complexity}) in Section~\ref{sec:curriculum}.
+    \item Kasai's LCP invariant (\ref{eq:kasai_invariant}) in Section~\ref{sec:curriculum}.
+    \item Burnside's Lemma orbit counting (\ref{eq:burnside_formula}) in Section~\ref{sec:curriculum}.
+    \item Karp polynomial-time reduction (\ref{eq:karp_reduction}) in Section~\ref{sec:curriculum}.
+\end{itemize}
+
+\begingroup
+\emergencystretch=1.5em
+\printbibliography
+\endgroup
+\end{document}
