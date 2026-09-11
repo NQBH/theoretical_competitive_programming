@@ -1,0 +1,173 @@
+\documentclass[10pt, letterpaper]{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=10]{biblatex}
+\addbibresource{bib.bib}
+
+\usepackage{tocloft}
+
+
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{algorithm,algpseudocode,amsmath,amssymb,amsthm,float,graphicx,mathtools,tikz}
+\usetikzlibrary{arrows}
+\allowdisplaybreaks
+
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{problem}{Problem}[section]
+\newtheorem{theorem}{Theorem}[section]
+
+\usepackage[margin=2cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+\lstset{style=mystyle}
+
+\title{Theoretical Competitive Programming (TCP): A Tripartite Pedagogical Framework Integrating Formal Mathematics, Hardware-Aware C++, and Differential Testing}
+\author{Nguyen Quan Ba Hong\footnote{University of Management and Technology, Ho Chi Minh City, No. 2, 60CL Street, Quarter 9, Cat Lai Ward, Thu Duc City, Ho Chi Minh City 700000, Vietnam\\E-mail: {\tt hong.nguyenquanba@umt.edu.vn, nguyenquanbahong@gmail.com}}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This manuscript presents the Theoretical Competitive Programming (TCP) framework, which aligns competitive programming (CP) with Theoretical Computer Science (TCS). To address pedagogical concerns regarding student cognitive offloading to generative AI, the TCP framework proposes a tripartite protocol. Under this protocol, algorithmic solutions are initially derived using formal mathematical invariants (e.g., monoids, posets, and max-flow min-cut duality). Subsequently, these abstractions are translated into hardware-aware systems-level C++ implementations optimized for memory hierarchy and spatial cache locality. Finally, implementation correctness is evaluated using Python-based differential testing and symbolic verification. By integrating discrete mathematics, systems-level engineering, and automated testing, this methodology structures the use of AI as an auxiliary tool, emphasizing algorithmic reasoning and formal proofs in computer science education.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}\label{sec:intro}
+Competitive Programming (CP) has historically served as an established environment for developing algorithmic problem-solving skills \cite{wing2006computational}, influencing evaluation methods in technology sectors. However, traditional CP pedagogy often emphasizes rapid coding and pattern recognition over formalisms of Theoretical Computer Science (TCS). Furthermore, the adoption of large language models (LLMs) has introduced challenges to algorithmic education. When confronted with complex algorithmic tasks, students may engage in cognitive offloading \cite{rozenblit2002illusion}, utilizing generative AI to synthesize code rather than deriving the underlying logic independently.
+
+To address these issues, this manuscript presents the Theoretical Competitive Programming (TCP) framework. Based on an 18-module curriculum, the TCP methodology outlines a tripartite protocol, which integrates formal mathematical analysis with systems-level programming and automated verification \cite{tao2026mathai,tao2006solving}. 
+
+\section{Literature review and theoretical framework}
+This section contextualizes the TCP framework by contrasting competitive programming evaluation methods with formal theoretical computer science, and by examining the pedagogical impact of generative AI on algorithmic education.
+
+\subsection{Methodology of competitive programming}
+Traditional competitive programming platforms, such as VNOI, Codeforces, CodeChef, AtCoder, Topcoder, SPOJ (Sphere Online Judge), and the CSES Problem Set, prioritize input-output validation over structural algorithmic proofs. While this encourages rapid prototyping, it permits submissions that may lack formal mathematical justification or tight asymptotic bounds. In contrast, formal theoretical computer science focuses on state-space analysis, invariants, and asymptotic complexity (e.g., distinguishing between deterministic polynomial time $\mathsf{P}$ and nondeterministic polynomial time $\mathsf{NP}$). The TCP framework argues that treating CP solely as a coding exercise isolates it from its mathematical foundations.
+
+\subsection{Generative AI and cognitive offloading in CS education}
+The integration of generative AI into computer science education has altered the acquisition of algorithmic reasoning. In traditional pedagogy, ``productive struggle'' is often used to teach concepts such as dynamic programming state transitions or graph-theoretic topological sorts. Large language models bypass this process by generating syntactically correct solutions. However, these models operate probabilistically, sometimes generating algorithms that are logically flawed or asymptotically suboptimal (e.g., failing to exploit a structural invariant that reduces an exhaustive permutation search of tight complexity $\Theta(n!)$ to an optimal comparison-based sorting procedure with tight asymptotic complexity $\Theta(n \log n)$, where $n \in \mathbb{Z}_{\ge 1}$ denotes the input cardinality).
+
+\section{A TCP tripartite protocol}\label{sec:tripartite_protocol}
+Designed to counter over-reliance on generative AI and reinforce foundational algorithmic reasoning, the TCP framework formalizes a Tripartite Protocol. Each curricular module is structured systematically around this three-phase protocol:
+
+\subsection{Phase 1: mathematical theory and invariants}\label{sec:phase1_math}
+Each computational problem is initially formalized by identifying the governing algebraic structures, topological invariants, and analytical bounds. Across all modules, for any integer $n \in \mathbb{Z}_{\ge 1}$, we define the canonical index sets $[n] \coloneqq \{1, \dots, n\}$ and $[n]_0 \coloneqq [n] \cup \{0\}$.
+\begin{itemize}
+    \item \textit{Algebraic formulation}: Mapping state transitions to abstract algebraic structures. For instance, segment trees are generalized over any monoid $(S, \oplus, e)$, where $\oplus: S \times S \to S$ is an associative binary operation and $e \in S$ is the two-sided identity ($\forall a,b,c \in S, (a \oplus b) \oplus c = a \oplus (b \oplus c)$ and $a \oplus e = e \oplus a = a$). Sequence partitioning problems are resolved by applying order-theoretic minimax duality on finite partially ordered sets (posets) $(P, \le)$ (with $|P| < \infty$): Dilworth's theorem equates the poset width to the minimum cardinality of a chain partition,
+	\begin{equation}\label{eq:poset_duality}
+		\operatorname{width}(P) = \max \{|A| : A \subseteq P \text{ is an antichain}\} = \min \{|\mathcal{C}| : \mathcal{C} \text{ is a chain partition of } P\},
+	\end{equation}
+	while Mirsky's theorem dually equates the poset height to the minimum cardinality of an antichain partition,
+	\begin{equation}\label{eq:mirsky_duality}
+		\operatorname{height}(P) = \max \{|C| : C \subseteq P \text{ is a chain}\} = \min \{|\mathcal{A}| : \mathcal{A} \text{ is an antichain partition of } P\}.
+	\end{equation}
+    \item \textit{Asymptotic calculus}: Deriving asymptotic bounds by proving that execution time $T: \mathbb{N} \to \mathbb{R}_{\ge 0}$ and reference complexity $f: \mathbb{N} \to \mathbb{R}_{\ge 0}$ satisfy the Bachmann--Landau definition:
+\begin{equation}\label{eq:bachmann_landau}
+    T \in \Theta(f) \iff \exists c_1, c_2 \in \mathbb{R}_{> 0}, \exists n_0 \in \mathbb{N} \text{ such that } \forall n \ge n_0, 0 \le c_1 f(n) \le T(n) \le c_2 f(n).
+\end{equation}
+This establishes asymptotic bounds for recurrence relations under the Random Access Machine (RAM) model \cite{knuth1997art}.
+\end{itemize}
+
+\subsection{Phase 2: systems-level C++ (hardware considerations) \texorpdfstring{\cite{stroustrup2013c}}{}}\label{sec:phase2_cpp}
+While asymptotic bounds characterize mathematical efficiency on abstract machines, empirical execution speed depends on hardware hierarchy and memory architectures.
+\begin{itemize}
+    \item \textit{Cache optimization}: Under the Aggarwal--Vitter $(M, B)$ external-memory model \cite{aggarwal1988input}, memory capacity $M$ and block transfer size $B$ satisfy $M, B \in \mathbb{Z}_{\ge 1}$ with $B\in[M/2]$. In the external regime where the problem size satisfies $n > M$ (implying $n \ge 3$), I/O complexity $Q(n; M, B)$ measures block transfers between internal cache and secondary memory. Contiguous flat-array allocations achieve the sequential scanning bound
+	\begin{equation}\label{eq:scan_bound}
+		\operatorname{Scan}(n) = \Theta\left(\left\lceil \frac{n}{B} \right\rceil\right)
+	\end{equation}
+	transfers, mitigating the worst-case $\Omega(n)$ cache misses characteristic of pointer-based node representations.
+    \item \textit{Bitwise and memory constraints}: Representing subset state spaces as bit vectors in $\{0, 1\}^n$ enables compact memory layouts and word-level bitwise operations, bridging hardware caches to subset computations. Over the Boolean lattice $\mathcal{B}_n \coloneqq (\mathcal{P}([n]), \subseteq)$ for any function $F: \mathcal{P}([n]) \to R$ taking values in a commutative ring $(R, +, \cdot)$, the sub-lattice summation
+	\begin{equation}\label{eq:fzt_transform}
+		\hat{F}(U) = \sum_{V \subseteq U} F(V), \quad \forall U \in \mathcal{P}([n]),
+	\end{equation}
+	is computed via the Fast Zeta Transform (FZT) in exactly $n 2^{n-1}$ scalar additions (tight asymptotic complexity $\Theta(n 2^n)$ additions, compared to $\Theta(3^n)$ for naive submask iteration and $\Theta(n^2 2^n)$ for ranked subset convolutions). Processing transitions dimension-by-dimension over contiguous flat arrays yields sequential memory access patterns that enhance spatial cache locality and eliminate pointer indirection overhead.
+\end{itemize}
+
+\subsection{Phase 3: Python differential testing and symbolic verification}\label{sec:phase3_testing}
+To verify implementation correctness against systems-level bugs and integer edge cases, differential testing harnesses and symbolic reference oracles are constructed in Python, decoupling verification from hardware-level execution constraints.
+\begin{itemize}
+    \item \textit{Test generation}: Automated test generators construct boundary cases and stress inputs (e.g., degenerate topologies, dense bipartite graphs, extremal integer boundaries).
+    \item \textit{Symbolic computation}: Combining Python's native arbitrary-precision integer arithmetic (preventing fixed-width integer overflow) with computer algebra systems such as \texttt{SymPy} \cite{meurer2017sympy} (performing exact symbolic derivations to eliminate floating-point rounding errors) and multidimensional array structures via \texttt{NumPy} \cite{harris2020array}, reference solvers compute exact combinatorial quantities.
+    \item \textit{Differential testing}: The output of the optimized implementation ($\mathcal{S}_{\mathrm{opt}}$) is empirically compared against the reference combinatorial oracle ($\mathcal{S}_{\mathrm{ref}}$) across a sampled distribution of adversarial topologies $\mathcal{D}$. Evaluating $m \in \mathbb{Z}_{\ge 1}$ independent and identically distributed (i.i.d.) test instances drawn from $\mathcal{D}$ with zero observed discrepancies ensures, via $(1 - \epsilon)^m < e^{-\epsilon m} \le \delta$, with statistical confidence at least $1 - \delta$ that the failure probability satisfies $\mathbb{P}_{x \sim \mathcal{D}}[\mathcal{S}_{\mathrm{opt}}(x) \neq \mathcal{S}_{\mathrm{ref}}(x)] \le \epsilon$ whenever
+	\begin{equation}\label{eq:sample_complexity}
+		m \ge \left\lceil \frac{1}{\epsilon} \ln \frac{1}{\delta} \right\rceil
+	\end{equation}
+	(with exact discrete threshold $\lceil \frac{\ln \delta}{\ln(1 - \epsilon)} \rceil$), for any tolerance parameters $\epsilon, \delta \in (0, 1)$. On finite bounded subdomains $\mathcal{D}_{\le n_0}$, exhaustive enumeration provides deterministic verification: $\forall x \in \mathcal{D}_{\le n_0}, \mathcal{S}_{\mathrm{opt}}(x) = \mathcal{S}_{\mathrm{ref}}(x)$.
+\end{itemize}
+
+\section{Curricular synthesis of the TCP guidebook}\label{sec:curriculum}
+The TCP Guidebook applies this protocol across an 18-module curriculum, spanning foundational discrete algorithms to computational complexity and $\mathsf{NP}$-completeness. Representative curriculum components include:
+
+\begin{enumerate}
+    \item \textit{Advanced data structures (rollback DSU)}: Formalizing the Rollback Disjoint-Set Union (DSU) over an $n$-element universe ($n \in \mathbb{Z}_{\ge 1}$) by omitting path compression and maintaining union-by-size. Because any component tree $\mathcal{T}$ of height $h$ satisfies $|V(\mathcal{T})| \ge 2^h$, the tree height satisfies the structural bound $2^{\operatorname{height}(\mathcal{T})} \le |V(\mathcal{T})| \le n$, implying
+	\begin{equation}\label{eq:dsu_depth}
+		\operatorname{height}(\mathcal{T}) \le \lfloor \log_2 n \rfloor,
+	\end{equation}
+	establishing an $\mathcal{O}(\log n)$ worst-case query time. Recording the state mutations (the parent link and component size) per union on an execution stack permits state restoration in $\Theta(1)$ time per rollback operation.
+    \item \textbf{Graph topology and flow networks:} Modeling flow networks $G=(V, E, c)$ with non-negative rational edge capacities $c: E \to \mathbb{Q}_{\ge 0}$ (or integer capacities $c: E \to \mathbb{Z}_{\ge 0}$), where the Max-Flow Min-Cut theorem establishes primal-dual optimality. Monotonicity of shortest residual distances $d_{k+1}(s, t) \ge d_k(s, t) + 1$ bounds Dinic's algorithm to at most $|V|-1$ layered phases, yielding a worst-case time complexity of $\mathcal{O}(|V|^2|E|)$. On unit networks with unit vertex capacities ($c(v) = 1$ for all $v \in V \setminus \{s, t\}$), the phase count is bounded by $2\sqrt{|V|}$ via the Even--Tarjan theorem, reducing the bound to
+	\begin{equation}\label{eq:dinic_complexity}
+		T_{\text{unit}}(V, E) = \mathcal{O}(|E|\sqrt{|V|})
+	\end{equation}
+	(as applied in maximum bipartite matching).
+    \item \textit{String combinatorics (suffix arrays and LCP)}: Constructing Suffix Arrays for a string $s$ of length $n \in \mathbb{Z}_{\ge 1}$ over an alphabet $\Sigma$ in $\mathcal{O}(n \log n)$ time via prefix-doubling equivalence ranking, and Longest Common Prefix (LCP) arrays in linear time $\mathcal{O}(n)$ via Kasai's algorithm. For all $i \in [n-1]$ satisfying $\operatorname{rank}[i+1] > 1$ (with $h[i]$ denoting the LCP of suffix $i$ with its lexicographical predecessor suffix in the suffix array, and $h[k] \coloneqq 0$ when $\operatorname{rank}[k]=1$), Kasai's algorithm exploits the positional invariant
+	\begin{equation}\label{eq:kasai_invariant}
+		h[i+1] \ge h[i] - 1,
+	\end{equation}
+	bounding the cumulative character comparison increments across all iterations by at most $2n$.
+    \item \textit{Combinatorial group theory}: For a finite symmetry group $G$ acting on a finite set $X$, Burnside's Lemma computes the orbit count
+	\begin{equation}\label{eq:burnside_formula}
+		|X/G| = \frac{1}{|G|}\sum_{g \in G} |X^g|,
+	\end{equation}
+	where $X^g \coloneqq \{x \in X : g \cdot x = x\}$ is the fixed-point set under $g \in G$. When $G$ acts on a finite domain $D$ and $X = C^D$ denotes the set of colorings with a palette $C$ of $k = |C|$ colors, the P\'olya Enumeration Theorem evaluates the cycle index polynomial $Z_G(t_1, \dots, t_{|D|})$, specializing to $|C^D/G| = Z_G(k, \dots, k) = \frac{1}{|G|}\sum_{g \in G} k^{c(g)}$ (where $c(g)$ is the number of disjoint cycles of $g$ on $D$), enumerating non-isomorphic equivalence classes without exhaustive state-space search.
+    \item \textit{Complexity theory ($\mathsf{P}$ vs $\mathsf{NP}$)}: Formalizing computational limits through Karp's polynomial-time many-one reductions between formal languages $L_1, L_2 \subseteq \Sigma^*$ over a finite alphabet $\Sigma$:
+	\begin{equation}\label{eq:karp_reduction}
+		\begin{aligned}
+			L_1 \le_p L_2 \iff {} & \exists \text{ polynomial-time computable function } f: \Sigma^* \to \Sigma^* \\
+			& \text{such that } \forall x \in \Sigma^*, \; x \in L_1 \iff f(x) \in L_2.
+		\end{aligned}
+	\end{equation}
+	The execution time $T_f(|x|) = \mathcal{O}(|x|^k)$ for some constant $k \ge 1$ upper-bounds the output length $|f(x)| \le T_f(|x|)$, ensuring that the composition of reductions is polynomial-time computable and establishing the theoretical boundaries of computational tractability.
+\end{enumerate}
+
+\section{Implementation and expected impacts}\label{sec:implementation}
+Implementing the TCP methodology provides an alternative assessment model for undergraduate and competitive algorithms curricula. By structuring coursework across mathematical invariants, systems-level implementations, and differential testbenches, the framework evaluates formal reasoning, architectural awareness, and verification rigor concurrently. Within this pedagogical workflow, generative AI is framed as an auxiliary tool for exploratory syntax generation and debugging rather than as an authoritative substitute for algorithmic design. Although the framework is designed to counter passive reliance on automated code synthesis, claims regarding its empirical efficacy in mitigating cognitive offloading remain hypotheses to be evaluated through controlled educational cohort studies, rather than established experimental findings.
+
+\section{Conclusion}\label{sec:conclusion}
+The Theoretical Competitive Programming (TCP) framework provides a formal pedagogical structure for computer science education. By applying the tripartite protocol, it integrates mathematical derivation, systems-level software engineering, and automated verification into a coherent problem-solving framework. Future empirical research will examine the deployment of this curriculum across undergraduate student cohorts to quantitatively evaluate educational outcomes and assess its influence on student problem-solving strategies and cognitive offloading tendencies.
+
+\section*{Data and code availability}
+No empirical datasets involving human participants or student cohorts were generated or analyzed during this theoretical and methodological study. To facilitate independent verification and educational adaptation, the reference algorithmic implementations (in C++ and Python), hardware benchmark scripts, automated differential test harnesses, software environment specifications, and the companion Vietnamese TCP Guidebook are available at \url{https://github.com/NQBH/theoretical_competitive_programming}.
+
+\section*{Acknowledgment}
+The author acknowledges the institutional and infrastructural support provided by the University of Management and Technology, Ho Chi Minh City (UMT HCMC). Gratitude is extended to the administration and the School of Technology at UMT HCMC for their support during the formalization and verification of this theoretical framework.
+
+\printbibliography
+\end{document}
